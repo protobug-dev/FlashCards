@@ -1,0 +1,360 @@
+:root {
+    --bg-color: #f0f4f8;
+    --card-bg: #ffffff;
+    --text-color: #2c3e50;
+    --accent-color: #3498db;
+    --success-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+    --border-color: #e2e8f0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 { 
+    color: var(--accent-color); 
+    margin-bottom: 20px; 
+}
+
+.container { 
+    width: 100%; 
+    max-width: 1400px; /* Было 800px. Теперь сетка станет просторнее */
+    margin: 0 auto;
+}
+
+.panel {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+.flex-row { 
+    display: flex; 
+    gap: 10px; 
+    flex-wrap: wrap; 
+    margin-bottom: 10px; 
+}
+
+.flex-row input, .flex-row select { 
+    flex: 1; 
+    min-width: 150px; 
+    padding: 10px; 
+    border: 1px solid #cbd5e1; 
+    border-radius: 6px; 
+    font-size: 16px; 
+}
+
+/* Блок вариантов перевода */
+.variants-box {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 6px;
+}
+.variants-box label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #64748b;
+    display: block;
+    margin-bottom: 5px;
+}
+.variants-list {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.variant-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: white;
+    padding: 5px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+button {
+    background-color: var(--accent-color);
+    color: white; 
+    border: none; 
+    padding: 10px 20px;
+    border-radius: 6px; 
+    cursor: pointer; 
+    font-size: 15px;
+    transition: opacity 0.2s; 
+    font-weight: bold;
+}
+button:hover { opacity: 0.9; }
+button.secondary { background-color: #95a5a6; }
+button.success { background-color: var(--success-color); }
+
+/* Модернизированная панель управления */
+.filter-zone { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 20px; 
+    gap: 15px;
+    flex-wrap: wrap;
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.backup-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.filter-zone label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+}
+.filter-zone select { 
+    padding: 8px 12px; 
+    border-radius: 6px; 
+    font-size: 14px; 
+    border: 1px solid #cbd5e1;
+    background-color: #fff;
+    color: var(--text-color);
+}
+
+.grid { 
+    display: grid; 
+    /* auto-fill автоматически рассчитывает, сколько карточек по 200px влезет в строку */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+    gap: 20px; 
+}
+
+.card-container { 
+    perspective: 1000px; 
+    min-height: 240px; /* Было height: 220px */
+    cursor: pointer; 
+    position: relative; 
+}
+
+.card { 
+    width: 100%; 
+    height: 100%; 
+    position: relative; 
+    transform-style: preserve-3d; 
+    transition: transform 0.5s; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+    border-radius: 10px; 
+}
+.card.flipped { transform: rotateY(180deg); }
+
+.card-front, .card-back { 
+    position: absolute; 
+    width: 100%; 
+    height: 100%; 
+    backface-visibility: hidden; 
+    display: flex; 
+    flex-direction: column; 
+    box-sizing: border-box; 
+    border-radius: 10px; 
+    overflow: hidden; 
+}
+
+.card-front { background-color: var(--card-bg); color: var(--text-color); }
+.card-back { background-color: var(--accent-color); color: white; transform: rotateY(180deg); }
+
+.card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.card-category { font-size: 12px; color: #7f8c8d; font-weight: normal; margin-top: 5px; }
+.card-back .card-category { color: #e0e0e0; }
+
+.card-example {
+    font-size: 13px;
+    font-style: italic;
+    font-weight: normal;
+    color: #7f8c8d;
+    margin-top: 8px;
+    max-width: 90%;
+    line-height: 1.2;
+}
+.card-back .card-example { color: #e0e0e0; }
+
+.audio-btn { 
+    position: absolute; 
+    top: 10px;
+    right: 10px;
+    background: none; 
+    border: none; 
+    font-size: 18px; 
+    cursor: pointer; 
+    z-index: 5; 
+}
+
+.card-toolbar {
+    display: flex;
+    width: 100%;
+    border-top: 1px solid var(--border-color);
+    background-color: #fafafa;
+    z-index: 10;
+}
+.card-back .card-toolbar {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.toolbar-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 10px 0;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s, color 0.2s;
+    border-radius: 0;
+}
+
+.card-front .btn-edit { color: var(--warning-color); border-right: 1px solid var(--border-color); }
+.card-front .btn-edit:hover { background-color: #fffbeb; }
+.card-front .btn-delete { color: var(--danger-color); }
+.card-front .btn-delete:hover { background-color: #fef2f2; }
+
+.card-back .toolbar-btn { color: #ffffff; opacity: 0.8; }
+.card-back .btn-edit { border-right: 1px solid rgba(255, 255, 255, 0.2); }
+.card-back .toolbar-btn:hover { background-color: rgba(255, 255, 255, 0.15); opacity: 1; }
+
+.test-box { text-align: center; padding: 30px; display: none; }
+.test-exercise-label {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: var(--accent-color);
+    background: #eff8ff;
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+}
+.test-word { font-size: 32px; font-weight: bold; margin-bottom: 20px; color: var(--accent-color); }
+.test-audio-btn { background: none; color: initial; font-size: 24px; padding: 0; margin-bottom: 15px; border: none; cursor: pointer; }
+.test-input { width: 80%; max-width: 300px; padding: 12px; font-size: 18px; border: 2px solid #ccc; border-radius: 6px; margin-bottom: 15px; text-align: center; }
+.feedback { font-size: 18px; font-weight: bold; margin-top: 15px; min-height: 24px; }
+
+/* Варианты ответа в тесте с выбором */
+.choices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    max-width: 520px;
+    margin: 0 auto 15px;
+}
+.choice-btn {
+    background-color: #ffffff;
+    color: var(--text-color);
+    border: 2px solid #cbd5e1;
+    padding: 14px 10px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.choice-btn:hover:not(:disabled) {
+    border-color: var(--accent-color);
+    background-color: #eff8ff;
+}
+.choice-btn:disabled { cursor: default; opacity: 0.9; }
+.choice-btn.correct { background-color: var(--success-color); border-color: var(--success-color); color: white; }
+.choice-btn.wrong { background-color: var(--danger-color); border-color: var(--danger-color); color: white; }
+
+/* Прогресс-бар в тесте */
+.progress-container {
+    width: 100%;
+    background-color: #e2e8f0;
+    border-radius: 10px;
+    height: 8px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background-color: var(--success-color);
+    transition: width 0.3s ease;
+}
+
+/* Статистика на карточках */
+.card-stats {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 11px;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #64748b;
+    display: flex;
+    gap: 5px;
+}
+.card-back .card-stats {
+    color: #e0e0e0;
+    background: rgba(255, 255, 255, 0.15);
+}
+.stat-ok { color: var(--success-color); font-weight: bold; }
+.stat-fail { color: var(--danger-color); font-weight: bold; }
+
+/* Индикатор уровня интервального повторения */
+.card-level {
+    position: absolute;
+    bottom: 50px;
+    right: 10px;
+    font-size: 11px;
+    background: var(--accent-color);
+    color: white;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+.card-back .card-level {
+    background: white;
+    color: var(--accent-color);
+}
+.card-due-badge {
+    position: absolute;
+    bottom: 50px;
+    left: 10px;
+    font-size: 11px;
+    background: var(--warning-color);
+    color: white;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: bold;
+}

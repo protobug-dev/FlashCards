@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Умные карточки английского Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>🇬🇧 Smart Flashcards Pro</h1>
+
+        <!-- Панель создания -->
+        <div class="panel" id="creatorPanel">
+            <h3 id="formTitle">Добавить новую карточку</h3>
+            <input type="hidden" id="editIndex" value="-1">
+            
+            <div class="flex-row">
+                <input type="text" id="wordInput" placeholder="Слово (английский)">
+                <button onclick="FormHandler.autoTranslate()" class="secondary" id="translateBtn">🔍 Автоперевод</button>
+            </div>
+            
+            <div id="variantsContainer" class="variants-box" style="display: none;">
+                <label>Выберите подходящие переводы:</label>
+                <div id="translationVariants" class="variants-list"></div>
+            </div>
+
+            <div class="flex-row">
+                <input type="text" id="translationInput" placeholder="Перевод (русский)">
+            </div>
+            <div class="flex-row">
+                <input type="text" id="exampleInput" placeholder="Пример употребления (необязательно)">
+            </div>
+            <div class="flex-row">
+                <select id="categorySelect"></select>
+                <input type="text" id="newCategoryInput" placeholder="Или создайте новую категорию">
+                <button onclick="FormHandler.addCard()" id="submitCardBtn">Добавить</button>
+                <button onclick="FormHandler.cancelEdit()" class="secondary" id="cancelEditBtn" style="display: none;">Отмена</button>
+            </div>
+        </div>
+
+        <!-- Управление отображением, тестом и резервным копированием -->
+        <div class="filter-zone" id="controlZone">
+            <div class="filter-group">
+                <label for="filterCategory">📁 Категория: </label>
+                <select id="filterCategory" onchange="UiManager.renderCards()">
+                    <option value="all">Все категории</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filterRepetition">⏳ Повторение: </label>
+                <select id="filterRepetition" onchange="UiManager.renderCards()">
+                    <option value="all">Все карточки</option>
+                    <option value="due">Только к повторению</option>
+                </select>
+            </div>
+            <div class="backup-group">
+                <button class="success" onclick="startTest()">🎯 Начать тест</button>
+                <button class="secondary" onclick="exportData()">💾 Экспорт</button>
+                <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="importData(event)">
+                <button class="secondary" onclick="document.getElementById('importFileInput').click()">📂 Импорт</button>
+            </div>
+            <!-- НОВЫЙ БЛОК СОРТИРОВКИ -->
+            <div class="filter-group">
+                <label for="sortOrder">🔤 Сортировка: </label>
+                <select id="sortOrder" onchange="UiManager.renderCards()">
+                    <option value="default">По дате добавления</option>
+                    <option value="alphabetical">По алфавиту (A-Z)</option>
+                </select>
+            </div>
+
+        </div>
+
+        <!-- Сетка карточек -->
+        <div class="grid" id="cardsGrid"></div>
+
+        <!-- Окно тестирования -->
+        <div class="panel test-box" id="testBox">
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <h3 id="testProgress">Вопрос 0 из 0</h3>
+            <div class="test-exercise-label" id="testExerciseLabel"></div>
+            <div class="test-word" id="testWord">Word</div>
+            <button onclick="TestModule.speakCurrentWord()" class="test-audio-btn" id="testAudioBtn">🔊</button>
+            <br>
+            <input type="text" id="testInput" class="test-input" placeholder="Введите перевод" autocomplete="off">
+            <div id="choicesGrid" class="choices-grid" style="display:none;"></div>
+            <br>
+            <button onclick="checkAnswer()" id="checkAnswerBtn">Проверить</button>
+            <button class="secondary" onclick="stopTest()">Выйти из теста</button>
+            <div class="feedback" id="feedback"></div>
+        </div>
+    </div>
+
+    <!-- Подключение модулей в строгом порядке зависимостей -->
+    <script src="storage.js"></script>
+    <script src="api.js"></script>
+    <script src="test.js"></script>
+    <script src="ui-manager.js"></script>
+    <script src="form-handler.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
