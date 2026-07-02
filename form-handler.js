@@ -91,6 +91,54 @@ const FormHandler = {
         translationInput.value = selected.join(', ');
     },
 
+    openModalForCreate() {
+        this.resetFormFields();
+        document.getElementById('editIndex').value = "-1";
+        document.getElementById('formTitle').innerText = "Добавить новую карточку";
+        document.getElementById('submitCardBtn').innerText = "Добавить";
+        
+        document.getElementById('cardModal').classList.add('active');
+        document.getElementById('wordInput').focus();
+    },
+
+    editCard(event, index) {
+        event.stopPropagation();
+        const card = window.currentCards[index];
+        
+        this.resetFormFields();
+        
+        document.getElementById('wordInput').value = card.word;
+        document.getElementById('translationInput').value = card.translation;
+        document.getElementById('exampleInput').value = card.example || '';
+        document.getElementById('categorySelect').value = card.category;
+        document.getElementById('editIndex').value = index;
+
+        document.getElementById('formTitle').innerText = "Редактировать карточку";
+        document.getElementById('submitCardBtn').innerText = "Сохранить изменения";
+        
+        document.getElementById('cardModal').classList.add('active');
+    },
+
+    closeModal() {
+        document.getElementById('cardModal').classList.remove('active');
+        this.resetFormFields();
+    },
+
+    closeModalViaOverlay(event) {
+        if (event.target.id === 'cardModal') {
+            this.closeModal();
+        }
+    },
+
+    resetFormFields() {
+        document.getElementById('wordInput').value = '';
+        document.getElementById('translationInput').value = '';
+        document.getElementById('exampleInput').value = '';
+        document.getElementById('newCategoryInput').value = '';
+        document.getElementById('variantsContainer').style.display = 'none';
+        document.getElementById('translationVariants').innerHTML = '';
+    },
+
     addCard() {
         const word = document.getElementById('wordInput').value.trim();
         const translation = document.getElementById('translationInput').value.trim();
@@ -111,7 +159,6 @@ const FormHandler = {
             category = newCat;
         }
 
-        // Сохраняем старую статистику при редактировании, либо создаем новую
         let stats = { correct: 0, wrong: 0 };
         let level = 1;
         let nextReview = new Date().toISOString();
@@ -126,55 +173,24 @@ const FormHandler = {
 
         if (editIndex > -1) {
             window.currentCards[editIndex] = cardData;
-            this.cancelEdit();
         } else {
             window.currentCards.push(cardData);
         }
 
         StorageModule.saveCards(window.currentCards);
-
-        document.getElementById('wordInput').value = '';
-        document.getElementById('translationInput').value = '';
-        document.getElementById('exampleInput').value = '';
-        document.getElementById('newCategoryInput').value = '';
-        document.getElementById('variantsContainer').style.display = 'none';
-
-        UiManager.renderCards();
-    },
-
-    editCard(event, index) {
-        event.stopPropagation();
-        const card = window.currentCards[index];
         
-        document.getElementById('wordInput').value = card.word;
-        document.getElementById('translationInput').value = card.translation;
-        document.getElementById('exampleInput').value = card.example || '';
-        document.getElementById('categorySelect').value = card.category;
-        document.getElementById('editIndex').value = index;
-        document.getElementById('variantsContainer').style.display = 'none';
-
-        document.getElementById('formTitle').innerText = "Редактировать карточку";
-        document.getElementById('submitCardBtn').innerText = "Сохранить изменения";
-        document.getElementById('cancelEditBtn').style.display = "inline-block";
-        document.getElementById('creatorPanel').scrollIntoView({ behavior: 'smooth' });
-    },
-
-    cancelEdit() {
-        document.getElementById('editIndex').value = "-1";
-        document.getElementById('formTitle').innerText = "Добавить новую карточку";
-        document.getElementById('submitCardBtn').innerText = "Добавить";
-        document.getElementById('cancelEditBtn').style.display = "none";
-        document.getElementById('wordInput').value = '';
-        document.getElementById('translationInput').value = '';
-        document.getElementById('exampleInput').value = '';
-        document.getElementById('variantsContainer').style.display = 'none';
+        this.closeModal();
+        
+        UiManager.updateCategorySelects();
+        if (newCat) {
+            document.getElementById('categorySelect').value = newCat;
+        }
+        
+        UiManager.renderCards();
     },
 
     deleteCard(event, index) {
         event.stopPropagation();
-        if (parseInt(document.getElementById('editIndex').value) === index) {
-            this.cancelEdit();
-        }
         if (confirm('Удалить эту карточку?')) {
             window.currentCards.splice(index, 1);
             StorageModule.saveCards(window.currentCards);

@@ -15,16 +15,47 @@ const UiManager = {
         });
     },
 
+    // Управление меню настроек (шестеренка)
+    toggleSettingsMenu(event) {
+        event.stopPropagation();
+        const dropdown = document.getElementById('settingsDropdown');
+        dropdown.classList.toggle('active');
+        
+        // Закрываем меню при клике в любое другое место экрана вне меню
+        if (dropdown.classList.contains('active')) {
+            const closeMenu = (e) => {
+                if (!dropdown.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                    document.removeEventListener('click', closeMenu);
+                }
+            };
+            document.addEventListener('click', closeMenu);
+        }
+    },
+
     renderCards() {
         const grid = document.getElementById('cardsGrid');
         const filterCategory = document.getElementById('filterCategory').value;
         const filterRepetition = document.getElementById('filterRepetition').value;
-        const sortOrder = document.getElementById('sortOrder').value; // Получаем режим сортировки
+        const sortOrder = document.getElementById('sortOrder').value; 
         grid.innerHTML = '';
 
         const now = new Date();
 
-        // 1. Фильтруем карточки
+        // 1. СНАЧАЛА ОТРИСОВЫВАЕМ ПУСТУЮ КАРТОЧКУ-КНОПКУ ДЛЯ СОЗДАНИЯ
+        const creatorContainer = document.createElement('div');
+        creatorContainer.className = 'card-container';
+        creatorContainer.innerHTML = `
+            <div class="card card-add-placeholder" onclick="FormHandler.openModalForCreate()">
+                <div class="card-add-content">
+                    <span class="plus-icon">➕</span>
+                    <span class="plus-text">Создать карточку</span>
+                </div>
+            </div>
+        `;
+        grid.appendChild(creatorContainer);
+
+        // 2. Фильтруем пользовательские карточки
         let filteredCards = window.currentCards.filter(card => {
             const matchCat = filterCategory === 'all' || card.category === filterCategory;
             
@@ -36,28 +67,24 @@ const UiManager = {
             return matchCat && matchRep;
         });
 
-        // 2. Сортируем отфильтрованные карточки по алфавиту, если выбран этот режим
+        // 3. Сортируем отфильтрованные карточки
         if (sortOrder === 'alphabetical') {
             filteredCards.sort((a, b) => {
-                // Приводим к нижнему регистру для корректного сравнения
                 const wordA = a.word.trim().toLowerCase();
                 const wordB = b.word.trim().toLowerCase();
-                // localeCompare правильно сравнивает строки с учетом специфики языков
                 return wordA.localeCompare(wordB, 'en');
             });
         }
 
-        // 3. Отрисовываем карточки
+        // 4. Отрисовываем отфильтрованные карточки
         filteredCards.forEach((card) => {
             const realIndex = window.currentCards.indexOf(card);
             const exampleHtml = card.example ? `<div class="card-example">“${card.example}”</div>` : '';
             
-            // Безопасные дефолты для статистики
             const correct = card.stats ? card.stats.correct : 0;
             const wrong = card.stats ? card.stats.wrong : 0;
             const level = card.level || 1;
             
-            // Проверка, нужно ли повторять прямо сейчас
             const isDue = card.nextReview ? new Date(card.nextReview) <= now : true;
             const dueBadgeHtml = isDue ? `<div class="card-due-badge">⏳ Повторить</div>` : '';
 
@@ -109,6 +136,8 @@ const UiManager = {
     },
 
     flipCard(element) { 
+        // Предотвращаем переворот, если кликнули по плейсхолдеру создания
+        if (element.classList.contains('card-add-placeholder')) return;
         element.classList.toggle('flipped'); 
     }
 };

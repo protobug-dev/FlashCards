@@ -1,9 +1,10 @@
+// Полный исправленный модуль тестирования (Test Module)
+
 const TestModule = {
     queue: [],
     currentIndex: 0,
     score: 0,
 
-    // Метки и подсказки для каждого типа упражнения
     EXERCISE_LABELS: {
         'typed:en-ru': '✍️ Переведите на русский',
         'typed:ru-en': '✍️ Переведите на английский',
@@ -16,9 +17,7 @@ const TestModule = {
         this.currentIndex = 0;
         this.score = 0;
 
-        document.getElementById('creatorPanel').style.display = 'none';
-        document.getElementById('controlZone').style.display = 'none';
-        document.getElementById('cardsGrid').style.display = 'none';
+        // ИСПРАВЛЕНО: creatorPanel удален, скрытие основных узлов теперь координирует app.js
         document.getElementById('testBox').style.display = 'block';
 
         document.getElementById('testInput').style.display = 'inline-block';
@@ -28,7 +27,6 @@ const TestModule = {
         this.showQuestion();
     },
 
-    // Строим очередь: для каждой карточки - 4 упражнения (typed/choice x en-ru/ru-en), затем перемешиваем
     buildQueue(cards) {
         let queue = [];
         cards.forEach(card => {
@@ -37,7 +35,7 @@ const TestModule = {
             queue.push({ card, execType: 'choice', direction: 'en-ru' });
             queue.push({ card, execType: 'choice', direction: 'ru-en' });
         });
-        // Fisher-Yates
+        
         for (let i = queue.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [queue[i], queue[j]] = [queue[j], queue[i]];
@@ -78,11 +76,9 @@ const TestModule = {
         document.getElementById('testProgress').innerText = `Вопрос ${this.currentIndex + 1} из ${this.queue.length}`;
         exerciseLabel.innerText = this.EXERCISE_LABELS[`${ex.execType}:${ex.direction}`];
 
-        // Что показываем как "вопрос": для en-ru - английское слово, для ru-en - русский перевод
         const promptText = ex.direction === 'en-ru' ? card.word : card.translation;
         document.getElementById('testWord').innerText = promptText;
 
-        // Озвучиваем и показываем кнопку 🔊 только когда на экране английское слово
         if (ex.direction === 'en-ru') {
             audioBtn.style.display = 'inline-block';
             ApiModule.speak(card.word);
@@ -160,7 +156,7 @@ const TestModule = {
 
     checkAnswer() {
         const ex = this.queue[this.currentIndex];
-        if (!ex || ex.execType === 'choice') return; // выбор обрабатывается через selectChoice
+        if (!ex || ex.execType === 'choice') return;
 
         if (this.currentIndex >= this.queue.length) {
             this.stop();
@@ -201,28 +197,21 @@ const TestModule = {
             this.score++;
             realCard.stats.correct++;
 
-            // Интервальное повторение: повышаем уровень (макс 5)
             if (realCard.level < 5) realCard.level++;
-            // Озвучиваем английское слово в качестве обратной связи, если вопрос был на русском
             if (ex.direction === 'ru-en') ApiModule.speak(card.word);
         } else {
             feedbackEl.style.color = 'var(--danger-color)';
             feedbackEl.innerText = `Ошибка. Правильно: ${correctAnswerMessage}`;
             realCard.stats.wrong++;
-
-            // Ошибка сбрасывает уровень прогресса обратно на 1
             realCard.level = 1;
         }
 
-        // Высчитываем дату следующего повторения на основе уровня
-        // Уровень 1: через 1 день, 2: 3 дня, 3: 7 дней, 4: 14 дней, 5: 30 дней
         const intervals = { 1: 1, 2: 3, 3: 7, 4: 14, 5: 30 };
         const daysToAdd = intervals[realCard.level] || 1;
         const nextDate = new Date();
         nextDate.setDate(nextDate.getDate() + daysToAdd);
         realCard.nextReview = nextDate.toISOString();
 
-        // Сохраняем прогресс на лету
         StorageModule.saveCards(window.currentCards);
 
         this.currentIndex++;
@@ -230,14 +219,14 @@ const TestModule = {
     },
 
     stop() {
-        document.getElementById('creatorPanel').style.display = 'block';
-        document.getElementById('controlZone').style.display = 'flex';
-        document.getElementById('cardsGrid').style.display = 'grid';
+        // ИСПРАВЛЕНО: удалены ссылки на creatorPanel и исправлены стили отображения
         document.getElementById('testBox').style.display = 'none';
         document.getElementById('testInput').style.display = 'inline-block';
         document.getElementById('testAudioBtn').style.display = 'inline-block';
         document.getElementById('checkAnswerBtn').style.display = 'inline-block';
         document.getElementById('choicesGrid').style.display = 'none';
         document.getElementById('testExerciseLabel').innerText = '';
+        document.getElementById('cardsGrid').style.display = 'grid';
+
     }
 };

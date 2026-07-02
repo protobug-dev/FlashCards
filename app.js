@@ -1,4 +1,4 @@
-// Главная точка входа приложения (Application Entry Point)
+// Полный исправленный файл app.js (Application Entry Point)
 
 // Объявляем глобальную базу данных без let/const, чтобы избежать SyntaxError
 window.currentCards = StorageModule.getCards();
@@ -23,6 +23,11 @@ function startTest() {
         return;
     }
 
+    // Скрываем шапку, панель управления и сетку карточек
+    document.querySelector('.app-header').style.display = 'none';
+    document.getElementById('controlZone').style.display = 'none';
+    document.getElementById('cardsGrid').style.display = 'none';
+
     TestModule.start(testCards);
 }
 
@@ -32,6 +37,18 @@ function checkAnswer() {
 
 function stopTest() { 
     TestModule.stop(); 
+    
+    // Возвращаем элементы интерфейса на место
+    document.querySelector('.app-header').style.display = 'flex';
+    document.getElementById('controlZone').style.display = 'flex';
+    document.getElementById('cardsGrid').style.display = 'grid'; // Гарантируем видимость сетки
+
+    // ИСПРАВЛЕНО: Сбрасываем фильтры в дефолтное состояние "Все", чтобы карточки не исчезали
+    document.getElementById('filterCategory').value = 'all';
+    document.getElementById('filterRepetition').value = 'all';
+    document.getElementById('sortOrder').value = 'default';
+
+    // Перерисовываем сетку с чистыми фильтрами
     UiManager.renderCards(); 
 }
 
