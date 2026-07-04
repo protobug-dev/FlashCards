@@ -1,24 +1,37 @@
 // Модуль управления кастомными комбобоксами панели фильтров (UI Combobox Module)
 
 const UiComboBox = {
-    // Динамическое наполнение кастомных списков данными из базы
+    // ИСПРАВЛЕНО: Теперь фильтры собираются динамически ТОЛЬКО из тех слов, что есть в базе карточек
     initFilters() {
-        const categories = StorageModule.getCategories();
+        // 1. Извлекаем уникальные непустые значения из всех существующих карточек
+        const uniqueLevels = [...new Set(window.currentCards.map(c => c.levelStr).filter(Boolean))];
+        const uniquePos = [...new Set(window.currentCards.map(c => c.partOfSpeech).filter(Boolean))];
+        const uniqueTopics = [...new Set(window.currentCards.map(c => c.topic).filter(Boolean))];
 
-        this.renderOptions('filterLevelOptions', categories.levels, 'level');
-        this.renderOptions('filterPosOptions', categories.partsOfSpeech, 'partOfSpeech');
-        this.renderOptions('filterTopicOptions', categories.topics, 'topic');
+        // 2. Умная сортировка уровней по шкале CEFR (от А0 до С2)
+        const cefrOrder = ["A0", "A1", "A2", "B1", "B2", "C1", "C2"];
+        uniqueLevels.sort((a, b) => cefrOrder.indexOf(a) - cefrOrder.indexOf(b));
+
+        // 3. Сортировка частей речи и тем по алфавиту (для красоты отображения)
+        uniquePos.sort((a, b) => a.localeCompare(b, 'ru'));
+        uniqueTopics.sort((a, b) => a.localeCompare(b, 'ru'));
+
+        // 4. Отрисовываем кастомные списки вариантов только на основе найденных живых элементов
+        this.renderOptions('filterLevelOptions', uniqueLevels, 'level');
+        this.renderOptions('filterPosOptions', uniquePos, 'partOfSpeech');
+        this.renderOptions('filterTopicOptions', uniqueTopics, 'topic');
     },
 
     renderOptions(containerId, items, filterKey) {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        // Кнопка сброса "Все"
+        // Кнопка сброса "Все" присутствует всегда
         container.innerHTML = `
             <div class="custom-select-option" onclick="UiComboBox.selectOption('${filterKey}', 'all', 'Все')">Все</div>
         `;
 
+        // Отрисовываем только существующие элементы
         items.forEach(item => {
             const optionDiv = document.createElement('div');
             optionDiv.className = 'custom-select-option';
@@ -31,7 +44,6 @@ const UiComboBox = {
     toggleSelect(event, containerId) {
         event.stopPropagation();
         
-        // Закрываем все остальные открытые комбобоксы перед открытием текущего
         document.querySelectorAll('.custom-select-container').forEach(el => {
             if (el.id !== containerId) el.classList.remove('open');
         });
@@ -51,18 +63,16 @@ const UiComboBox = {
     },
 
     selectOption(filterKey, value, label) {
-        // Записываем выбранное значение в фильтры главного модуля
         UiManager.filters[filterKey] = value;
         
-        // Обновляем текст на кнопке-триггере
         const triggerId = `customSelectValue${filterKey.charAt(0).toUpperCase() + filterKey.slice(1)}`;
-        document.getElementById(triggerId).innerText = label;
+        const triggerEl = document.getElementById(triggerId);
+        if (triggerEl) triggerEl.innerText = label;
         
-        // Закрываем контейнер
         const containerClass = `filter-${filterKey}-container`;
-        document.querySelector(`.${containerClass}`).classList.remove('open');
+        const containerEl = document.querySelector(`.${containerClass}`);
+        if (containerEl) containerEl.classList.remove('open');
         
-        // Перерисовываем сетку карточек с учётом новых параметров
         UiCardsRenderer.renderCards();
     }
 };
