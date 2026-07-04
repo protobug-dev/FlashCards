@@ -202,7 +202,44 @@ button.primary-btn { background-color: var(--primary-color); color: white; paddi
 .progress-cubes { display: flex; gap: 6px; flex-wrap: wrap; }
 .progress-cube { width: 14px; height: 14px; background-color: #cbd5e1; border-radius: 3px; transition: background-color 0.4s ease; }
 .progress-cube.completed { background-color: var(--success-color); box-shadow: 0 0 6px rgba(46, 204, 113, 0.4); }
-button.success-btn { background-color: var(--success-color); color: white; padding: 10px 20px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2); }
+/* ИСПРАВЛЕНО: Современная кнопка запуска с кастомным градиентным треугольником Play */
+button.success-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Отступ между треугольником и словом Старт */
+    background: linear-gradient(135deg, #2ecc71, #27ae60); /* Градиент для самой кнопки */
+    color: white;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2);
+    transition: transform 0.1s, box-shadow 0.2s;
+}
+
+button.success-btn:hover {
+    box-shadow: 0 6px 12px rgba(46, 204, 113, 0.3);
+    transform: translateY(-1px);
+}
+
+button.success-btn:active {
+    transform: translateY(0);
+}
+
+/* Создаем кастомную иконку Play средствами CSS */
+button.success-btn::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 12px;
+    /* Рисуем идеальный геометрический треугольник */
+    clip-path: polygon(0% 0%, 100% 50%, 0% 100%); 
+    /* Задаем сочный неоново-зеленый градиент для стрелочки */
+    background: linear-gradient(135deg, #ffffff, #e8fced); 
+    box-shadow: inset 1px 1px 1px rgba(0,0,0,0.1);
+}
+
 
 /* Сетка карточек */
 .grid {

@@ -168,6 +168,8 @@ const LessonModule = {
         LessonValidator.validateTypedAnswer(task);
     },
 
+    // Внутри файла lesson-engine.js найдите эти два метода и замените их:
+
     finishLesson() {
         StorageModule.incrementDailyActivity();
         
@@ -179,21 +181,16 @@ const LessonModule = {
         
         document.getElementById('testInput').style.display = 'none';
         document.getElementById('choicesGrid').style.display = 'none';
-        document.getElementById('testAudioBtn').style.display = 'none';
+        if (document.getElementById('testAudioBtn')) document.getElementById('testAudioBtn').style.display = 'none';
         
-        // ИСПРАВЛЕНО: Скрываем кнопку "Прервать урок" на экране поздравления
-        const cancelBtn = document.querySelector('#testBox button.secondary');
+        // ИСПРАВЛЕНО: Теперь жестко и со 100% гарантией скрываем кнопку по её точному ID
+        const cancelBtn = document.getElementById('abortLessonBtn');
         if (cancelBtn) cancelBtn.style.display = 'none';
         
         const checkBtn = document.getElementById('checkAnswerBtn');
-        checkBtn.style.display = 'inline-block';
-        checkBtn.innerText = 'Завершить 🏁';
-    },
-
-    speakCurrentWord() {
-        if (this.currentIndex < this.queue.length) {
-            const task = this.queue[this.currentIndex];
-            ApiModule.speak(task.card.word);
+        if (checkBtn) {
+            checkBtn.style.display = 'inline-block';
+            checkBtn.innerText = 'Завершить 🏁';
         }
     },
 
@@ -205,9 +202,19 @@ const LessonModule = {
         
         document.getElementById('testBox').classList.remove('hard-mode');
         
-        const cancelBtn = document.querySelector('#testBox button.secondary');
+        // ИСПРАВЛЕНО: При выходе из урока возвращаем видимость кнопки по ID на случай следующего старта сессии
+        const cancelBtn = document.getElementById('abortLessonBtn');
         if (cancelBtn) cancelBtn.style.display = 'inline-block';
         
         document.getElementById('testBox').style.display = 'none';
+    },
+
+
+    speakCurrentWord() {
+        if (this.currentIndex < this.queue.length) {
+            const task = this.queue[this.currentIndex];
+            ApiModule.speak(task.card.word);
+        }
     }
+
 };
