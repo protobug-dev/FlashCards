@@ -21,7 +21,9 @@
     transition: transform 0.3s ease;
 }
 
-.settings-toggle-btn:hover { transform: rotate(45deg); }
+.settings-toggle-btn:hover { 
+    transform: rotate(45deg); 
+}
 
 .settings-dropdown {
     display: none;
@@ -37,7 +39,9 @@
     overflow: hidden;
 }
 
-.settings-dropdown.active { display: block; }
+.settings-dropdown.active { 
+    display: block; 
+}
 
 .settings-dropdown button {
     display: block;
@@ -52,7 +56,9 @@
     transition: background 0.2s ease;
 }
 
-.settings-dropdown button:hover { background-color: var(--secondary-color); }
+.settings-dropdown button:hover { 
+    background-color: var(--secondary-color); 
+}
 
 .settings-item {
     padding: 12px 16px;
@@ -61,9 +67,12 @@
     flex-direction: column;
     gap: 6px;
 }
-.settings-item select { width: 100%; padding: 4px; }
+.settings-item select { 
+    width: 100%; 
+    padding: 4px; 
+}
 
-/* Зона управления (Фильтры) */
+/* Зона управления (Фильтры) - Режим ПК */
 .filter-zone {
     display: flex;
     flex-wrap: wrap;
@@ -72,7 +81,7 @@
     padding: 15px 20px;
     border-radius: 10px;
     margin-bottom: 25px;
-    align-items: center;
+    align-items: center; 
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
@@ -82,7 +91,7 @@
     gap: 8px;
 }
 
-/* Базовые стили полей */
+/* Базовые стили полей ввода и селектов */
 select, input[type="text"] {
     padding: 8px 12px;
     border: 1px solid var(--border-color);
@@ -97,13 +106,13 @@ select, input[type="text"] {
     color: #7f8c8d;
 }
 
-/* --- ИСПРАВЛЕНО: СТИЛИЗАЦИЯ ПОЛНОСТЬЮ КАСТОМНОГО ВЫПАДАЮЩЕГО КОМБОБОКСА --- */
+/* --- СТИЛИЗАЦИЯ КАСТОМНЫХ ВЫПАДАЮЩИХ КОМБОБОКСОВ --- */
 .custom-select-container {
     position: relative;
     min-width: 160px;
 }
 
-/* Главная кнопка-триггер (Скругление уменьшено до 6px под общую концепцию) */
+/* Главная кнопка-триггер фильтра */
 .custom-select-trigger {
     width: 100%;
     display: flex;
@@ -115,7 +124,7 @@ select, input[type="text"] {
     color: #4a90e2;
     background-color: #ebf3fc;
     border: 1px solid rgba(74, 144, 226, 0.2);
-    border-radius: 6px; /* Мягкие, не слишком круглые углы */
+    border-radius: 6px; 
     cursor: pointer;
     transition: background-color 0.2s, border-color 0.2s;
 }
@@ -132,12 +141,11 @@ select, input[type="text"] {
     transition: transform 0.2s ease;
 }
 
-/* Разворот стрелочки при открытии */
 .custom-select-container.open .custom-select-arrow {
     transform: rotate(180deg);
 }
 
-/* Кастомный блок с вариантами ответов (Опции) */
+/* Раскрывающийся блок с вариантами */
 .custom-select-options {
     display: none;
     position: absolute;
@@ -146,8 +154,8 @@ select, input[type="text"] {
     width: 100%;
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 6px; /* Синхронные мягкие скругления списка */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Красивая мягкая тень */
+    border-radius: 6px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     z-index: 200;
     max-height: 200px;
     overflow-y: auto;
@@ -168,7 +176,6 @@ select, input[type="text"] {
     text-align: left;
 }
 
-/* Красивая пастельная подсветка при наведении на пункт списка */
 .custom-select-option:hover {
     background-color: #f0f4f9;
     color: #4a90e2;
@@ -188,7 +195,7 @@ button:hover { opacity: 0.9; }
 button.secondary { background-color: var(--secondary-color); color: var(--text-color); border: 1px solid var(--border-color); }
 button.primary-btn { background-color: var(--primary-color); color: white; padding: 10px 20px; }
 
-/* Дневные кубики */
+/* Дневные кубики и счётчик уроков */
 .daily-progress-box {
     display: flex;
     align-items: center;
@@ -197,18 +204,46 @@ button.primary-btn { background-color: var(--primary-color); color: white; paddi
     padding: 6px 15px;
     border-radius: 20px;
     border: 1px solid var(--border-color);
+    min-height: 34px; 
 }
-.progress-label { font-size: 13px; font-weight: bold; color: #7f8c8d; }
-.progress-cubes { display: flex; gap: 6px; flex-wrap: wrap; }
-.progress-cube { width: 14px; height: 14px; background-color: #cbd5e1; border-radius: 3px; transition: background-color 0.4s ease; }
-.progress-cube.completed { background-color: var(--success-color); box-shadow: 0 0 6px rgba(46, 204, 113, 0.4); }
-/* ИСПРАВЛЕНО: Современная кнопка запуска с кастомным градиентным треугольником Play */
+
+.progress-label { 
+    font-size: 13px; 
+    font-weight: bold; 
+    color: #7f8c8d; 
+}
+
+.progress-cubes { 
+    display: flex; 
+    gap: 6px; 
+    flex-wrap: wrap; 
+}
+
+.progress-cube { 
+    width: 14px; 
+    height: 14px; 
+    background-color: #cbd5e1; 
+    border-radius: 3px; 
+    transition: background-color 0.4s ease; 
+}
+
+.progress-cube.completed { 
+    background-color: var(--success-color); 
+    box-shadow: 0 0 6px rgba(46, 204, 113, 0.4); 
+}
+
+/* Блок кнопки намертво прижат к правому краю (ПК Режим) */
+.test-action-group {
+    margin-left: auto; 
+}
+
+/* Кнопка Старт */
 button.success-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px; /* Отступ между треугольником и словом Старт */
-    background: linear-gradient(135deg, #2ecc71, #27ae60); /* Градиент для самой кнопки */
+    gap: 8px;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
     color: white;
     padding: 10px 18px;
     font-size: 14px;
@@ -216,6 +251,7 @@ button.success-btn {
     border-radius: 6px;
     box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2);
     transition: transform 0.1s, box-shadow 0.2s;
+    white-space: nowrap; 
 }
 
 button.success-btn:hover {
@@ -227,23 +263,62 @@ button.success-btn:active {
     transform: translateY(0);
 }
 
-/* Создаем кастомную иконку Play средствами CSS */
 button.success-btn::before {
     content: '';
     display: inline-block;
     width: 10px;
     height: 12px;
-    /* Рисуем идеальный геометрический треугольник */
     clip-path: polygon(0% 0%, 100% 50%, 0% 100%); 
-    /* Задаем сочный неоново-зеленый градиент для стрелочки */
     background: linear-gradient(135deg, #ffffff, #e8fced); 
     box-shadow: inset 1px 1px 1px rgba(0,0,0,0.1);
 }
-
 
 /* Сетка карточек */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 20px;
+}
+
+
+/* --- ИСПРАВЛЕНО: УМНАЯ АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ ЭКРАНОВ (ЭКРАНЫ ДО 768px) --- */
+@media (max-width: 768px) {
+    /* Перестраиваем панель в строгую вертикальную колонку */
+    .filter-zone {
+        flex-direction: column;
+        align-items: stretch; /* Растягиваем элементы на всю ширину */
+        gap: 12px;
+        padding: 15px;
+    }
+
+    /* Растягиваем фильтры на 100% ширины, делая их симметричными */
+    .filter-zone .filter-group {
+        display: flex;
+        justify-content: space-between; /* Название слева, комбобокс справа */
+        width: 100%;
+    }
+
+    /* Делаем кастомные кнопки выбора одинаковыми по ширине на мобильном */
+    .filter-zone .custom-select-container {
+        flex-grow: 1;
+        max-width: 65%; /* Ограничиваем комбобокс, чтобы он аккуратно встал справа */
+    }
+
+    /* На последней строчке кубики прогресса и кнопка встанут в аккуратный горизонтальный ряд */
+    .daily-progress-box {
+        width: auto;
+        flex-grow: 1; /* Отдаем кубикам максимум места слева */
+        justify-content: space-between;
+    }
+
+    /* Кнопка старт больше не прибивается влево жестко, а встает вровень с кубиками в подвале панели */
+    .test-action-group {
+        margin-left: 0;
+        display: flex;
+    }
+
+    button.success-btn {
+        width: 100%; /* Кнопка становится крупной и удобной для клика пальцем */
+        padding: 12px 20px; /* Немного увеличиваем высоту под тач-интерфейс */
+    }
 }
