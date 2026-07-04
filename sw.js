@@ -1,6 +1,5 @@
 // Фоновый скрипт кэширования PWA (Service Worker)
-const CACHE_NAME = 'flashcards-v2'; // Изменили версию, чтобы сбросить старый кэш
-// Найдите этот блок в начале sw.js и обновите строку с иконкой:
+const CACHE_NAME = 'flashcards-v3; // Изменили версию, чтобы сбросить старый кэш
 const ASSETS = [
   './index.html',
   './lesson-box.html',
@@ -19,7 +18,7 @@ const ASSETS = [
   './ui-cards-renderer.js',
   './form-handler.js',
   './app.js',
-  './icons8-graduation-cap-96.png', // ИСПРАВЛЕНО: точное имя вашего файла
+  './icons8-graduation-cap-96.png',
   './flashcards_backup.json'
 ];
 
