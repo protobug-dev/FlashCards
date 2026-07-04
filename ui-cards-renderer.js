@@ -45,24 +45,28 @@ const UiCardsRenderer = {
         `;
         grid.appendChild(creatorContainer);
 
-        // ИСПРАВЛЕНО: Получаем текущее значение строки живого поиска
         const searchInput = document.getElementById('appSearchInput');
         const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
 
-        // 2. Умная трёхмерная фильтрация + ФИЛЬТРАЦИЯ ПО ЖИВОМУ ПОИСКУ
+        // 2. Умная трёхмерная фильтрация + Живой поиск
         const f = UiManager.filters;
         let filteredCards = window.currentCards.filter(card => {
             const matchLvl = f.level === 'all' || card.levelStr === f.level;
             const matchPos = f.partOfSpeech === 'all' || card.partOfSpeech === f.partOfSpeech;
             const matchTopic = f.topic === 'all' || card.topic === f.topic;
             
-            // Проверка подстроки в английском слове ИЛИ русском переводе карточки
             const matchSearch = !query || 
                 card.word.toLowerCase().includes(query) || 
                 card.translation.toLowerCase().includes(query);
 
             return matchLvl && matchPos && matchTopic && matchSearch;
         });
+
+        // ИСПРАВЛЕНО: Динамически выводим количество отфильтрованных карточек в бейдж строки поиска
+        const counterBadge = document.getElementById('searchCounterBadge');
+        if (counterBadge) {
+            counterBadge.innerText = filteredCards.length;
+        }
 
         // 3. Сортировка по алфавиту
         filteredCards.sort((a, b) => a.word.trim().toLowerCase().localeCompare(b.word.trim().toLowerCase(), 'en'));

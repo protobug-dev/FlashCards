@@ -70,12 +70,23 @@
                 </div>
             </div>
 
-            <!-- ИСПРАВЛЕНО: Интерактивный живой поиск по подстроке -->
-            <div class="search-group">
-                <input type="text" id="appSearchInput" placeholder="🔍 Поиск слова или перевода..." oninput="UiCardsRenderer.renderCards()" autocomplete="off">
-            </div>
             
-            <!-- ИСПРАВЛЕНО: Метка "Пройдено сегодня" полностью удалена, остались только лаконичные кубики -->
+            <div class="search-group">
+                <div class="search-input-wrapper">
+                    <!-- Векторная современная лупа (SVG) -->
+                    <svg class="search-icon-svg" xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.604 10.604Z" />
+                    </svg>
+                    
+                    <!-- Поле поиска без текстового эмодзи -->
+                    <input type="text" id="appSearchInput" placeholder="Поиск слова или перевода..." oninput="UiCardsRenderer.renderCards()" autocomplete="off">
+                    
+                    <!-- Счетчик количества -->
+                    <span id="searchCounterBadge" class="search-counter-badge">0</span>
+                </div>
+            </div>
+
+
             <div class="daily-progress-box">
                 <div class="progress-cubes" id="dailyCubes"></div>
             </div>

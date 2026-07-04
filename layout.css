@@ -106,21 +106,43 @@ select, input[type="text"] {
     color: #7f8c8d;
 }
 
-/* ИСПРАВЛЕНО: Стили нового блока интерактивного поиска */
 .search-group {
-    flex-grow: 1; /* Поиск занимает всё свободное пространство в центре */
-    min-width: 200px;
+    flex-grow: 1; 
+    min-width: 220px;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* Стили для новой тонкой векторной лупы */
+.search-icon-svg {
+    position: absolute;
+    left: 12px;
+    width: 16px;
+    height: 16px;
+    color: #94a3b8; /* Спокойный стальной цвет */
+    pointer-events: none;
+    transition: color 0.2s ease;
 }
 
 #appSearchInput {
     width: 100%;
     font-size: 13px;
-    padding: 7px 14px;
-    background-color: #f1f5f9; /* Легкая пастельно-серая подложка */
+    padding: 7px 45px 7px 36px; 
+    background-color: #f1f5f9; 
     border: 1px solid var(--border-color);
     border-radius: 6px;
     font-weight: 500;
     transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+/* При фокусе на поле лупа тоже красиво подсвечивается синим */
+.search-input-wrapper:focus-within .search-icon-svg {
+    color: #4a90e2;
 }
 
 #appSearchInput:focus {
@@ -128,6 +150,22 @@ select, input[type="text"] {
     border-color: #4a90e2;
     box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
 }
+
+.search-counter-badge {
+    position: absolute;
+    right: 10px;
+    background-color: #cbd5e1; 
+    color: #475569;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 12px; 
+    min-width: 22px;
+    text-align: center;
+    pointer-events: none; 
+    font-family: Arial, sans-serif;
+}
+
 
 /* --- СТИЛИЗАЦИЯ КАСТОМНЫХ ВЫПАДАЮЩИХ КОМБОБОКСОВ --- */
 .custom-select-container {
