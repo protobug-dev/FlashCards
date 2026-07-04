@@ -3,9 +3,8 @@
 // Инициализируем базу данных
 window.currentCards = StorageModule.getCards();
 
-// Функция запуска "Умного урока"
 function startLesson() {
-    const filterCategory = UiManager.selectedCategoryFilter;
+    const filterCategory = document.getElementById('filterCategory').value;
 
     if (window.currentCards.length === 0) {
         alert('Ваш словарь пуст! Создайте первую карточку, кликнув на пустую плитку в сетке.');
@@ -19,17 +18,12 @@ function startLesson() {
     LessonModule.start(filterCategory);
 }
 
-// ИСПРАВЛЕНО: Умный роутер кнопки проверки
 function checkAnswer() { 
     const checkBtn = document.getElementById('checkAnswerBtn');
-    
-    // Если на кнопке написано "Завершить", значит урок окончен и мы должны выйти
     if (checkBtn.innerText === 'Завершить 🏁') {
         stopTest();
         return;
     }
-    
-    // В противном случае — отправляем текст на валидацию
     LessonModule.checkAnswer(); 
 }
 
@@ -40,8 +34,7 @@ function stopTest() {
     document.getElementById('controlZone').style.display = 'flex';
     document.getElementById('cardsGrid').style.display = 'grid';
 
-    //document.getElementById('filterCategory').value = 'all';
-	UiManager.selectedCategoryFilter = 'all';
+    document.getElementById('filterCategory').value = 'all';
 
     UiManager.updateCategorySelects();
     UiManager.renderCards(); 
@@ -51,8 +44,19 @@ document.getElementById('testInput').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') checkAnswer();
 });
 
-window.addEventListener('DOMContentLoaded', () => {
+// Инициализация приложения
+window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('lessonSizeSelect').value = StorageModule.getLessonSize();
+    
+    // --- ИСПРАВЛЕНО: Автоматический онбординг для новых пользователей ---
+    // Если в LocalStorage нет карточек (первый заход), загружаем дефолтный файл с сервера
+    if (window.currentCards.length === 0) {
+        await StorageModule.loadDefaultData((loadedCards) => {
+            window.currentCards = loadedCards;
+        });
+    }
+    // -------------------------------------------------------------------
+
     UiManager.updateCategorySelects();
     UiManager.renderCards();
 });

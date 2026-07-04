@@ -29,7 +29,6 @@ const StorageModule = {
         return false;
     },
 
-    // Чтение и сохранение размера урока из настроек шестеренки
     getLessonSize() {
         return parseInt(localStorage.getItem(this.LESSON_SIZE_KEY)) || 10;
     },
@@ -38,40 +37,50 @@ const StorageModule = {
         localStorage.setItem(this.LESSON_SIZE_KEY, size);
     },
 
-    // Чтение и обновление количества пройденных за сегодня уроков
     getDailyActivity() {
-        const todayStr = new Date().toLocaleDateString(); // "DD.MM.YYYY"
+        const todayStr = new Date().toLocaleDateString();
         const savedData = JSON.parse(localStorage.getItem(this.ACTIVITY_KEY));
-
-        // Если запись существует и даты совпадают, возвращаем актуальное кол-во уроков
         if (savedData && savedData.date === todayStr) {
             return savedData.completedCount || 0;
         }
-
-        // Если наступил новый день или записей нет — возвращаем 0
         return 0;
     },
 
     incrementDailyActivity() {
         const todayStr = new Date().toLocaleDateString();
         const currentCount = this.getDailyActivity();
-        
-        const updatedData = {
-            date: todayStr,
-            completedCount: currentCount + 1
-        };
-
+        const updatedData = { date: todayStr, completedCount: currentCount + 1 };
         localStorage.setItem(this.ACTIVITY_KEY, JSON.stringify(updatedData));
         return updatedData.completedCount;
     },
 
-    // ЭКСПОРТ: Генерация Blob/JSON файла для безопасного скачивания без лимитов памяти
-    exportJSON() {
-        const dataToExport = {
-            cards: this.getCards(),
-            categories: this.getCategories()
-        };
+    // НОВЫЙ МЕТОД: Бесшовная загрузка стартового JSON-файла прямо с сервера (GitHub Pages)
+    async loadDefaultData(callback) {
+        try {
+            // Делаем асинхронный запрос к файлу, лежащему рядом с index.html
+            const response = await fetch('./flashcards_backup.json');
+            
+            // Если файла на сервере нет, просто тихо выходим
+            if (!response.ok) return;
 
+            const importedData = await response.json();
+            
+            if (importedData.categories && Array.isArray(importedData.categories)) {
+                localStorage.setItem(this.CATEGORIES_KEY, JSON.stringify(importedData.categories));
+            }
+            if (importedData.cards && Array.isArray(importedData.cards)) {
+                this.saveCards(importedData.cards);
+                
+                // Передаем новые данные в колбэк, чтобы обновить глобальную переменную в app.js
+                if (callback) callback(importedData.cards);
+            }
+        } catch (error) {
+            console.error('Не удалось автоматически загрузить стартовые карточки:', error);
+        }
+    },
+
+    exportJSON() {
+        const dataToExport = { cards: this.getCards(), categories: this.getCategories() };
         const jsonString = JSON.stringify(dataToExport, null, 2);
         const blob = new Blob([jsonString], { type: 'application/json' });
         const blobUrl = URL.createObjectURL(blob);
@@ -81,19 +90,15 @@ const StorageModule = {
         downloadAnchor.setAttribute("download", "flashcards_backup.json");
         document.body.appendChild(downloadAnchor);
         downloadAnchor.click();
-        
         document.body.removeChild(downloadAnchor);
         URL.revokeObjectURL(blobUrl);
     },
 
-    // ИМПОРТ: Чтение и безопасное слияние данных из внешнего файла
     importJSON(file, callback) {
         const reader = new FileReader();
-        
         reader.onload = (event) => {
             try {
                 const importedData = JSON.parse(event.target.result);
-                
                 if (!importedData.cards || !Array.isArray(importedData.cards)) {
                     alert('Ошибка: Неверный формат файла бэкапа.');
                     return;
@@ -114,7 +119,6 @@ const StorageModule = {
                     const isDuplicate = currentCards.some(oldCard => 
                         oldCard.word.trim().toLowerCase() === newCard.word.trim().toLowerCase()
                     );
-                    
                     if (!isDuplicate) {
                         currentCards.push(newCard);
                         addedCount++;
@@ -123,15 +127,12 @@ const StorageModule = {
 
                 this.saveCards(currentCards);
                 alert(`Импорт успешно завершен! Добавлено новых карточек: ${addedCount}`);
-                
                 if (callback) callback(currentCards);
-
             } catch (error) {
-                alert('Не удалось прочитать файл. Убедитесь, что это правильный JSON файл бэкапа.');
+                alert('Не удалось прочитать файл.');
                 console.error(error);
             }
         };
-
         reader.readAsText(file);
     }
 };
