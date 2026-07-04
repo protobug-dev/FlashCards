@@ -1,0 +1,154 @@
+/* Интерактивные компоненты и карточки (Cards & Components) */
+
+.card-container {
+    perspective: 1000px;
+    min-height: 230px; 
+    display: flex;
+}
+
+.card {
+    width: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    cursor: pointer;
+    display: flex;
+}
+.card.flipped { transform: rotateY(180deg); }
+
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.card-back { transform: rotateY(180deg); background-color: #fafbfc; }
+
+/* Пустая карточка (Заглушка) */
+.card-add-placeholder {
+    border: 2px dashed var(--primary-color);
+    background-color: rgba(74, 144, 226, 0.05);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s, transform 0.2s;
+    min-height: 230px;
+}
+.card-add-placeholder:hover { background-color: rgba(74, 144, 226, 0.1); transform: translateY(-2px); }
+.card-add-content { display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--primary-color); font-weight: bold; }
+.plus-icon { font-size: 32px; }
+
+/* Внутренние элементы карточки */
+.card-header-row { display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 32px; }
+.card-stats { display: flex; gap: 10px; font-size: 13px; font-weight: bold; }
+.stat-ok { color: var(--success-color); }
+.stat-fail { color: var(--danger-color); }
+
+.audio-btn {
+    position: static; background: none; font-size: 16px; padding: 4px 8px; border-radius: 4px; border: 1px solid transparent; transition: background-color 0.2s;
+}
+.audio-btn:hover { background-color: var(--secondary-color); border-color: var(--border-color); }
+
+.card-content { text-align: center; font-size: 20px; font-weight: bold; margin: 12px 0; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+.card-example { font-size: 13px; font-weight: normal; color: #7f8c8d; margin-top: 8px; font-style: italic; line-height: 1.4; }
+
+/* ИСПРАВЛЕНО: Современный дизайн категорий в виде кнопок-пилюль */
+.card-category {
+    font-size: 11px;
+    color: #4a90e2; /* Изображаем фирменный цвет текста */
+    background-color: #ebf3fc; /* Мягкая пастельная сине-серая подложка */
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    display: inline-block;
+    margin: 8px auto 0; /* Центрируем тег внутри контента */
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border: 1px solid rgba(74, 144, 226, 0.15);
+}
+
+.card-footer-row { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    width: 100%; 
+    margin-top: auto; 
+    padding-top: 10px;
+}
+
+.card-toolbar { 
+    display: flex; 
+    gap: 6px; 
+}
+
+.icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%; 
+    background-color: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    font-size: 12px;
+    padding: 0;
+    transition: background-color 0.2s, transform 0.1s;
+}
+.icon-btn:hover { background-color: #e2e4eb; transform: scale(1.05); }
+.icon-btn.btn-delete:hover { background-color: #ffdad6; border-color: var(--danger-color); }
+
+.card.due-card .card-front { border: 1.5px solid #f1c40f; box-shadow: 0 4px 12px rgba(241, 196, 15, 0.15); }
+
+/* Выученные карточки (Lvl 6) */
+.card.archived-card { cursor: default; }
+.card.archived-card .card-front { border: 2px solid #2ecc71; background-color: #f8fff9; opacity: 0.65; box-shadow: none; transition: opacity 0.3s; }
+.card.archived-card:hover .card-front { opacity: 1; }
+.card.archived-card .audio-btn { opacity: 0.7; }
+.card.archived-card .audio-btn:hover { opacity: 1; }
+
+/* Плитки уровней со скругленными углами */
+.lvl-badge {
+    display: flex; align-items: center; justify-content: center; width: 32px; height: 24px; border-radius: 6px; color: white; font-size: 13px;
+    font-family: 'Impact', 'Arial Black', sans-serif; font-weight: 900; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); user-select: none; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+}
+.lvl-badge-1 { background: linear-gradient(135deg, #a5b4fc, #6366f1); } 
+.lvl-badge-2 { background: linear-gradient(135deg, #f472b6, #ec4899); } 
+.lvl-badge-3 { background: linear-gradient(135deg, #38bdf8, #0284c7); } 
+.lvl-badge-4 { background: linear-gradient(135deg, #2dd4bf, #0d9488); } 
+.lvl-badge-5 { background: linear-gradient(135deg, #c084fc, #9333ea); } 
+
+.master-badge {
+    background: linear-gradient(135deg, #34d399, #059669); color: white; font-size: 10px; font-weight: bold; padding: 4px 8px; border-radius: 6px; box-shadow: 0 2px 4px rgba(52, 211, 153, 0.2); text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* ИСПРАВЛЕНО: Безупречная вертикальная центровка числа пройденных уроков */
+.daily-lessons-counter {
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: 18px;
+    color: var(--success-color);
+    font-weight: 900;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 14px; /* Синхронизируем высоту с высотой скрытых кубиков для ровной строки */
+}
+
+/* Перевод контекстного примера на обратной стороне карточки */
+.card-example-translation {
+    font-size: 12px;
+    font-weight: normal;
+    color: #95a5a6; /* Мягкий серый цвет */
+    margin-top: 4px;
+    font-style: italic;
+    line-height: 1.3;
+}

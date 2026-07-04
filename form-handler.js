@@ -5,6 +5,7 @@ const FormHandler = {
         const wordInput = document.getElementById('wordInput');
         const translationInput = document.getElementById('translationInput');
         const exampleInput = document.getElementById('exampleInput');
+        const exampleTranslationInput = document.getElementById('exampleTranslationInput');
         const translateBtn = document.getElementById('translateBtn');
         const variantsContainer = document.getElementById('variantsContainer');
         const variantsList = document.getElementById('translationVariants');
@@ -60,17 +61,27 @@ const FormHandler = {
                 }
 
                 let foundExample = '';
+                let foundExampleTranslation = '';
+
                 if (data.matches) {
                     for (let i = 0; i < data.matches.length; i++) {
                         const match = data.matches[i];
                         if (match.segment && match.segment.toLowerCase() !== text.toLowerCase() && match.segment.length > text.length * 2) {
                             foundExample = match.segment;
+                            foundExampleTranslation = match.translation || '';
                             break;
                         }
                     }
                 }
+                
                 exampleInput.value = foundExample;
-                if(!foundExample) exampleInput.placeholder = "Пример не найден, можно ввести вручную";
+                // ИСПРАВЛЕНО: Выводим найденный перевод примера прямо в новое текстовое поле инпута
+                exampleTranslationInput.value = foundExampleTranslation;
+
+                if(!foundExample) {
+                    exampleInput.placeholder = "Пример не найден, можно ввести вручную";
+                    exampleTranslationInput.placeholder = "Перевод примера можно ввести вручную";
+                }
 
             } else {
                 alert('Слово не распознано.');
@@ -110,6 +121,8 @@ const FormHandler = {
         document.getElementById('wordInput').value = card.word;
         document.getElementById('translationInput').value = card.translation;
         document.getElementById('exampleInput').value = card.example || '';
+        // ИСПРАВЛЕНО: Подгружаем перевод примера в текстовое поле при редактировании
+        document.getElementById('exampleTranslationInput').value = card.exampleTranslation || '';
         document.getElementById('categorySelect').value = card.category;
         document.getElementById('editIndex').value = index;
 
@@ -134,6 +147,8 @@ const FormHandler = {
         document.getElementById('wordInput').value = '';
         document.getElementById('translationInput').value = '';
         document.getElementById('exampleInput').value = '';
+        // ИСПРАВЛЕНО: Сбрасываем новое текстовое поле
+        document.getElementById('exampleTranslationInput').value = '';
         document.getElementById('newCategoryInput').value = '';
         document.getElementById('variantsContainer').style.display = 'none';
         document.getElementById('translationVariants').innerHTML = '';
@@ -143,6 +158,8 @@ const FormHandler = {
         const word = document.getElementById('wordInput').value.trim();
         const translation = document.getElementById('translationInput').value.trim();
         const example = document.getElementById('exampleInput').value.trim();
+        // ИСПРАВЛЕНО: Считываем перевод примера напрямую из текстового поля инпута
+        const exampleTranslation = document.getElementById('exampleTranslationInput').value.trim();
         const newCat = document.getElementById('newCategoryInput').value.trim();
         let category = document.getElementById('categorySelect').value;
         const editIndex = parseInt(document.getElementById('editIndex').value);
@@ -169,7 +186,7 @@ const FormHandler = {
             nextReview = window.currentCards[editIndex].nextReview || nextReview;
         }
 
-        const cardData = { word, translation, example, category, stats, level, nextReview };
+        const cardData = { word, translation, example, exampleTranslation, category, stats, level, nextReview };
 
         if (editIndex > -1) {
             window.currentCards[editIndex] = cardData;
@@ -178,7 +195,6 @@ const FormHandler = {
         }
 
         StorageModule.saveCards(window.currentCards);
-        
         this.closeModal();
         
         UiManager.updateCategorySelects();

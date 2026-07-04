@@ -1,0 +1,212 @@
+/* Макет, фильтры и элементы управления (Layout & Controls) */
+
+/* Шапка приложения */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+/* Контейнер настроек (Шестеренка) */
+.settings-menu-container {
+    position: relative;
+}
+
+.settings-toggle-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.settings-toggle-btn:hover { transform: rotate(45deg); }
+
+.settings-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 40px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 100;
+    min-width: 180px;
+    overflow: hidden;
+}
+
+.settings-dropdown.active { display: block; }
+
+.settings-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-color);
+    transition: background 0.2s ease;
+}
+
+.settings-dropdown button:hover { background-color: var(--secondary-color); }
+
+.settings-item {
+    padding: 12px 16px;
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.settings-item select { width: 100%; padding: 4px; }
+
+/* Зона управления (Фильтры) */
+.filter-zone {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    background-color: var(--card-bg);
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Базовые стили полей */
+select, input[type="text"] {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    outline: none;
+    font-size: 14px;
+}
+
+.filter-label {
+    font-size: 13px;
+    font-weight: bold;
+    color: #7f8c8d;
+}
+
+/* --- ИСПРАВЛЕНО: СТИЛИЗАЦИЯ ПОЛНОСТЬЮ КАСТОМНОГО ВЫПАДАЮЩЕГО КОМБОБОКСА --- */
+.custom-select-container {
+    position: relative;
+    min-width: 160px;
+}
+
+/* Главная кнопка-триггер (Скругление уменьшено до 6px под общую концепцию) */
+.custom-select-trigger {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4a90e2;
+    background-color: #ebf3fc;
+    border: 1px solid rgba(74, 144, 226, 0.2);
+    border-radius: 6px; /* Мягкие, не слишком круглые углы */
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.custom-select-trigger:hover {
+    background-color: #e1effe;
+    border-color: #4a90e2;
+}
+
+.custom-select-arrow {
+    font-size: 9px;
+    color: #4a90e2;
+    margin-left: 10px;
+    transition: transform 0.2s ease;
+}
+
+/* Разворот стрелочки при открытии */
+.custom-select-container.open .custom-select-arrow {
+    transform: rotate(180deg);
+}
+
+/* Кастомный блок с вариантами ответов (Опции) */
+.custom-select-options {
+    display: none;
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    width: 100%;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px; /* Синхронные мягкие скругления списка */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Красивая мягкая тень */
+    z-index: 200;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.custom-select-container.open .custom-select-options {
+    display: block;
+}
+
+/* Пункт списка */
+.custom-select-option {
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+    text-align: left;
+}
+
+/* Красивая пастельная подсветка при наведении на пункт списка */
+.custom-select-option:hover {
+    background-color: #f0f4f9;
+    color: #4a90e2;
+}
+
+/* Базовые кнопки */
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: opacity 0.2s;
+}
+button:hover { opacity: 0.9; }
+button.secondary { background-color: var(--secondary-color); color: var(--text-color); border: 1px solid var(--border-color); }
+button.primary-btn { background-color: var(--primary-color); color: white; padding: 10px 20px; }
+
+/* Дневные кубики */
+.daily-progress-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: var(--secondary-color);
+    padding: 6px 15px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+}
+.progress-label { font-size: 13px; font-weight: bold; color: #7f8c8d; }
+.progress-cubes { display: flex; gap: 6px; flex-wrap: wrap; }
+.progress-cube { width: 14px; height: 14px; background-color: #cbd5e1; border-radius: 3px; transition: background-color 0.4s ease; }
+.progress-cube.completed { background-color: var(--success-color); box-shadow: 0 0 6px rgba(46, 204, 113, 0.4); }
+button.success-btn { background-color: var(--success-color); color: white; padding: 10px 20px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2); }
+
+/* Сетка карточек */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}

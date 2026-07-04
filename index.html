@@ -3,18 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Умные карточки английского Pro</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Smart Flashcards Pro — Умные карточки</title>
+    
+    <!-- ИСПРАВЛЕНО: Современная иконка в закладки браузера без скачивания файлов -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://w3.org viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+    
+    <!-- Подключение модульных стилей -->
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="layout.css">
+    <link rel="stylesheet" href="components.css">
+    <link rel="stylesheet" href="modals-lesson.css">
 </head>
 <body>
 
     <div class="container">
         <!-- Шапка приложения с кнопкой настроек -->
         <header class="app-header">
-            <h1>🇬🇧 Smart Flashcards Pro</h1>
+            <!-- ИСПРАВЛЕНО: Красивый и лаконичный заголовок вместо букв GB -->
+            <h1>🎓 Smart Flashcards Pro</h1>
             <div class="settings-menu-container">
                 <button class="settings-toggle-btn" onclick="UiManager.toggleSettingsMenu(event)">⚙️</button>
                 <div class="settings-dropdown" id="settingsDropdown">
+                    <div class="settings-item">
+                        <label for="lessonSizeSelect">Карточек в уроке:</label>
+                        <select id="lessonSizeSelect" onchange="StorageModule.saveLessonSize(this.value)">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                            <option value="25">25</option>
+                        </select>
+                    </div>
+                    <hr>
                     <button onclick="exportData()">💾 Экспорт данных</button>
                     <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="importData(event)">
                     <button onclick="document.getElementById('importFileInput').click()">📂 Импорт данных</button>
@@ -22,14 +42,19 @@
             </div>
         </header>
 
-        <!-- 1. Панель управления (Фильтры, сортировка, запуск теста) -->
+        <!-- 1. Панель управления (Фильтры + Прогресс по кубикам + Кнопка Учить) -->
         <div class="filter-zone" id="controlZone">
             <div class="filter-group">
-                <label for="filterCategory">📁 Категория: </label>
-                <select id="filterCategory" onchange="UiManager.renderCards()">
-                    <option value="all">Все категории</option>
-                </select>
+                <span class="filter-label">Категория:</span>
+                <div class="custom-select-container" id="customSelectContainer">
+                    <button class="custom-select-trigger" onclick="UiManager.toggleCustomSelect(event)">
+                        <span id="customSelectValue">Все категории</span>
+                        <span class="custom-select-arrow">▼</span>
+                    </button>
+                    <div class="custom-select-options" id="customSelectOptions"></div>
+                </div>
             </div>
+            
             <div class="filter-group">
                 <label for="filterRepetition">⏳ Повторение: </label>
                 <select id="filterRepetition" onchange="UiManager.renderCards()">
@@ -37,22 +62,21 @@
                     <option value="due">Только к повторению</option>
                 </select>
             </div>
-            <div class="filter-group">
-                <label for="sortOrder">🔤 Сортировка: </label>
-                <select id="sortOrder" onchange="UiManager.renderCards()">
-                    <option value="default">По дате добавления</option>
-                    <option value="alphabetical">По алфавиту (A-Z)</option>
-                </select>
+            
+            <div class="daily-progress-box">
+                <span class="progress-label">Пройдено сегодня:</span>
+                <div class="progress-cubes" id="dailyCubes"></div>
             </div>
+
             <div class="test-action-group">
-                <button class="success" onclick="startTest()">🎯 Начать тест</button>
+                <button class="success-btn" onclick="startLesson()">🎯 Начать тренировку</button>
             </div>
         </div>
 
         <!-- 2. Сетка карточек -->
         <div class="grid" id="cardsGrid"></div>
 
-        <!-- 3. Окно тестирования -->
+        <!-- 3. Окно Урока -->
         <div class="panel test-box" id="testBox" style="display: none;">
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar"></div>
@@ -60,18 +84,18 @@
             <h3 id="testProgress">Вопрос 0 из 0</h3>
             <div class="test-exercise-label" id="testExerciseLabel"></div>
             <div class="test-word" id="testWord">Word</div>
-            <button onclick="TestModule.speakCurrentWord()" class="test-audio-btn" id="testAudioBtn">🔊</button>
+            <button onclick="LessonModule.speakCurrentWord()" class="test-audio-btn" id="testAudioBtn">🔊</button>
             <br>
             <input type="text" id="testInput" class="test-input" placeholder="Введите перевод" autocomplete="off">
             <div id="choicesGrid" class="choices-grid" style="display:none;"></div>
             <br>
             <button onclick="checkAnswer()" id="checkAnswerBtn">Проверить</button>
-            <button class="secondary" onclick="stopTest()">Выйти из теста</button>
+            <button class="secondary" onclick="stopTest()">Прервать урок</button>
             <div class="feedback" id="feedback"></div>
         </div>
     </div>
 
-    <!-- 4. Всплывающее модальное окно для создания и редактирования карточек -->
+    <!-- 4. Модальное окно для создания и редактирования карточек -->
     <div class="modal-overlay" id="cardModal" onclick="FormHandler.closeModalViaOverlay(event)">
         <div class="modal-content">
             <button class="close-modal-btn" onclick="FormHandler.closeModal()">✕</button>
@@ -94,6 +118,10 @@
             <div class="flex-row">
                 <input type="text" id="exampleInput" placeholder="Пример употребления (необязательно)">
             </div>
+            <!-- ИСПРАВЛЕНО: Добавлено явное поле для ввода перевода примера вручную -->
+            <div class="flex-row">
+                <input type="text" id="exampleTranslationInput" placeholder="Перевод примера (необязательно)">
+            </div>
             <div class="flex-row stack">
                 <select id="categorySelect"></select>
                 <input type="text" id="newCategoryInput" placeholder="Или создайте новую категорию">
@@ -104,10 +132,11 @@
         </div>
     </div>
 
-    <!-- Подключение модулей в строгом порядке зависимостей -->
     <script src="storage.js"></script>
     <script src="api.js"></script>
-    <script src="test.js"></script>
+    <script src="lesson-builder.js"></script>
+    <script src="lesson-validator.js"></script>
+    <script src="lesson-engine.js"></script>
     <script src="ui-manager.js"></script>
     <script src="form-handler.js"></script>
     <script src="app.js"></script>

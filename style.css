@@ -142,7 +142,7 @@ button.primary-btn { background-color: var(--primary-color); color: white; paddi
 /* CSS 3D Карточки */
 .card-container {
     perspective: 1000px;
-    height: 200px;
+    height: 220px; /* Немного увеличили высоту для лучшего распределения элементов */
 }
 
 .card {
@@ -205,30 +205,49 @@ button.primary-btn { background-color: var(--primary-color); color: white; paddi
 
 .plus-icon { font-size: 32px; }
 
-/* Элементы внутри карточки */
-.card-stats {
+/* ИСПРАВЛЕНО: Верхняя панель карточки для разделения статистики и звука */
+.card-header-row {
     display: flex;
     justify-content: space-between;
-    font-size: 12px;
+    align-items: center;
+    width: 100%;
+    min-height: 32px; /* Фиксируем высоту шапки */
+}
+
+.card-stats {
+    display: flex;
+    gap: 10px;
+    font-size: 13px;
     font-weight: bold;
 }
 .stat-ok { color: var(--success-color); }
 .stat-fail { color: var(--danger-color); }
 
+/* ИСПРАВЛЕНО: Убрано абсолютное позиционирование, кнопка теперь аккуратно стоит в углу */
 .audio-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
+    position: static; 
     background: none;
     font-size: 16px;
-    padding: 4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.audio-btn:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--border-color);
 }
 
 .card-content {
     text-align: center;
     font-size: 20px;
     font-weight: bold;
-    margin-top: 10px;
+    margin: 10px 0;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .card-example {
@@ -246,18 +265,23 @@ button.primary-btn { background-color: var(--primary-color); color: white; paddi
     font-weight: normal;
 }
 
+/* Нижняя панель карточки */
+.card-footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 8px;
+}
+
 .card-level {
     font-size: 11px;
     background-color: var(--secondary-color);
     padding: 2px 6px;
     border-radius: 4px;
-    align-self: flex-start;
 }
 
 .card-due-badge {
-    position: absolute;
-    bottom: 45px;
-    right: 15px;
     font-size: 11px;
     background-color: #ffeaa7;
     color: #d63031;
@@ -272,6 +296,7 @@ button.primary-btn { background-color: var(--primary-color); color: white; paddi
     gap: 8px;
     border-top: 1px solid var(--secondary-color);
     padding-top: 8px;
+    width: 100%;
 }
 
 .toolbar-btn {
@@ -381,3 +406,146 @@ button.primary-btn { background-color: var(--primary-color); color: white; paddi
 .choice-btn.correct { background-color: var(--success-color); color: white; }
 .choice-btn.wrong { background-color: var(--danger-color); color: white; }
 .feedback { font-weight: bold; margin-top: 15px; font-size: 18px; min-height: 24px; }
+
+/* --- СТИЛИ ДЛЯ ИГРОВЫХ КУБИКОВ ДНЕВНОЙ АКТИВНОСТИ --- */
+.daily-progress-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: var(--secondary-color);
+    padding: 6px 15px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.progress-label {
+    font-size: 13px;
+    font-weight: bold;
+    color: #7f8c8d;
+}
+
+.progress-cubes {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap; /* Чтобы бесконечные кубики красиво переносились */
+}
+
+.progress-cube {
+    width: 14px;
+    height: 14px;
+    background-color: #cbd5e1; /* Пустой серый кубик */
+    border-radius: 3px;
+    transition: background-color 0.4s ease, transform 0.2s;
+}
+
+.progress-cube.completed {
+    background-color: var(--success-color); /* Выполненный урок (зеленый) */
+    box-shadow: 0 0 6px rgba(46, 204, 113, 0.4);
+}
+
+/* Кнопка "Начать тренировку" */
+button.success-btn {
+    background-color: var(--success-color);
+    color: white;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2);
+}
+
+/* Настройка элемента внутри шестеренки */
+.settings-item {
+    padding: 12px 16px;
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.settings-item select {
+    width: 100%;
+    padding: 4px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Элегантное визуальное выделение карточек, у которых подошел срок повторения */
+.card.due-card .card-front {
+    border: 1.5px solid #f1c40f; /* Мягкое янтарное свечение вместо красного */
+    box-shadow: 0 4px 12px rgba(241, 196, 15, 0.15);
+}
+
+/* --- СТИЛИ ДЛЯ ПОЛНОСТЬЮ ВЫУЧЕННЫХ КАРТОЧЕК (LEVEL 6) --- */
+.card.archived-card {
+    cursor: default; /* Убираем указатель клика */
+}
+
+.card.archived-card .card-front {
+    border: 2px solid #2ecc71; /* Изумрудная рамка успеха */
+    background-color: #f8fff9; /* Легкий благородный зеленый оттенок */
+    opacity: 0.65; /* Делаем карточку полупрозрачной, уводя на второй план */
+    box-shadow: none;
+    transition: opacity 0.3s;
+}
+
+/* При наведении возвращаем фокус, чтобы слово можно было прочитать */
+.card.archived-card:hover .card-front {
+    opacity: 1;
+}
+
+/* Золотой бейдж мастера */
+.card-level.master-badge {
+    background-color: #f1c40f !important;
+    color: #ffffff;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(241, 196, 15, 0.3);
+}
+
+/* Отключаем кнопку аудио на архивных карточках, если они блеклые */
+.card.archived-card .audio-btn {
+    opacity: 0.7;
+}
+.card.archived-card .audio-btn:hover {
+    opacity: 1;
+}
+
+/* --- СТИЛИ ДЛЯ ОБНОВЛЕННЫХ ЦВЕТНЫХ БЕЙДЖЕЙ УРОВНЕЙ --- */
+.lvl-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%; /* Делаем бейдж идеально круглым */
+    color: white;
+    font-size: 14px;
+    /* Необычный, футуристичный жирный шрифт */
+    font-family: 'Impact', 'Arial Black', sans-serif; 
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    user-select: none;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Легкий объем для цифры */
+}
+
+/* Цветовой градиент прогресса: от тревожного красного до уверенного синего */
+.lvl-badge-1 { background: linear-gradient(135deg, #e74c3c, #c0392b); } /* Новый / Ошибка */
+.lvl-badge-2 { background: linear-gradient(135deg, #e67e22, #d35400); } /* Чуть закрепилось */
+.lvl-badge-3 { background: linear-gradient(135deg, #f1c40f, #f39c12); } /* Средний уровень */
+.lvl-badge-4 { background: linear-gradient(135deg, #3498db, #2980b9); } /* Хорошо помню */
+.lvl-badge-5 { background: linear-gradient(135deg, #9b59b6, #8e44ad); } /* Почти архив */
+
+/* Компактный бейдж мастера для 6 уровня */
+.master-badge {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(46, 204, 113, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}

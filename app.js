@@ -1,64 +1,58 @@
-// Полный исправленный файл app.js (Application Entry Point)
+// Главная точка входа приложения (Application Entry Point)
 
-// Объявляем глобальную базу данных без let/const, чтобы избежать SyntaxError
+// Инициализируем базу данных
 window.currentCards = StorageModule.getCards();
 
-// Прослойки для вызова функций из HTML
-function startTest() {
-    const filterCategory = document.getElementById('filterCategory').value;
-    const filterRepetition = document.getElementById('filterRepetition').value;
-    const now = new Date();
+// Функция запуска "Умного урока"
+function startLesson() {
+    const filterCategory = UiManager.selectedCategoryFilter;
 
-    const testCards = window.currentCards.filter(card => {
-        const matchCat = filterCategory === 'all' || card.category === filterCategory;
-        let matchRep = true;
-        if (filterRepetition === 'due') {
-            matchRep = card.nextReview ? new Date(card.nextReview) <= now : true;
-        }
-        return matchCat && matchRep;
-    });
-
-    if (testCards.length === 0) {
-        alert('Нет карточек, соответствующих выбранным фильтрам для теста!');
+    if (window.currentCards.length === 0) {
+        alert('Ваш словарь пуст! Создайте первую карточку, кликнув на пустую плитку в сетке.');
         return;
     }
 
-    // Скрываем шапку, панель управления и сетку карточек
     document.querySelector('.app-header').style.display = 'none';
     document.getElementById('controlZone').style.display = 'none';
     document.getElementById('cardsGrid').style.display = 'none';
 
-    TestModule.start(testCards);
+    LessonModule.start(filterCategory);
 }
 
+// ИСПРАВЛЕНО: Умный роутер кнопки проверки
 function checkAnswer() { 
-    TestModule.checkAnswer(); 
+    const checkBtn = document.getElementById('checkAnswerBtn');
+    
+    // Если на кнопке написано "Завершить", значит урок окончен и мы должны выйти
+    if (checkBtn.innerText === 'Завершить 🏁') {
+        stopTest();
+        return;
+    }
+    
+    // В противном случае — отправляем текст на валидацию
+    LessonModule.checkAnswer(); 
 }
 
 function stopTest() { 
-    TestModule.stop(); 
+    LessonModule.stop(); 
     
-    // Возвращаем элементы интерфейса на место
     document.querySelector('.app-header').style.display = 'flex';
     document.getElementById('controlZone').style.display = 'flex';
-    document.getElementById('cardsGrid').style.display = 'grid'; // Гарантируем видимость сетки
+    document.getElementById('cardsGrid').style.display = 'grid';
 
-    // ИСПРАВЛЕНО: Сбрасываем фильтры в дефолтное состояние "Все", чтобы карточки не исчезали
-    document.getElementById('filterCategory').value = 'all';
-    document.getElementById('filterRepetition').value = 'all';
-    document.getElementById('sortOrder').value = 'default';
+    //document.getElementById('filterCategory').value = 'all';
+	UiManager.selectedCategoryFilter = 'all';
 
-    // Перерисовываем сетку с чистыми фильтрами
+    UiManager.updateCategorySelects();
     UiManager.renderCards(); 
 }
 
-// Слушатель клавиатуры для инпута теста
 document.getElementById('testInput').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') checkAnswer();
 });
 
-// Инициализация при первой загрузке приложения
 window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('lessonSizeSelect').value = StorageModule.getLessonSize();
     UiManager.updateCategorySelects();
     UiManager.renderCards();
 });
