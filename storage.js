@@ -76,7 +76,7 @@ const StorageModule = {
 
     async loadDefaultData(callback) {
         try {
-            const response = await fetch('./FlashCards_backup.json');
+            const response = await fetch('./flashcards_backup.json');
             if (!response.ok) return;
 
             const importedData = await response.json();
