@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Flashcards Pro — Умные карточки</title>
+    <link rel="icon" type="image/png" href="https://icons8.com">
     
-    <!-- ИСПРАВЛЕНО: Современная иконка в закладки браузера без скачивания файлов -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://w3.org viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
-    
-    <!-- Подключение модульных стилей -->
     <link rel="stylesheet" href="theme.css">
     <link rel="stylesheet" href="layout.css">
     <link rel="stylesheet" href="components.css">
@@ -19,7 +16,6 @@
     <div class="container">
         <!-- Шапка приложения с кнопкой настроек -->
         <header class="app-header">
-            <!-- ИСПРАВЛЕНО: Красивый и лаконичный заголовок вместо букв GB -->
             <h1>🎓 Smart Flashcards Pro</h1>
             <div class="settings-menu-container">
                 <button class="settings-toggle-btn" onclick="UiManager.toggleSettingsMenu(event)">⚙️</button>
@@ -42,25 +38,36 @@
             </div>
         </header>
 
-        <!-- 1. Панель управления (Фильтры + Прогресс по кубикам + Кнопка Учить) -->
+        <!-- 1. Панель управления (Тройные фильтры + Прогресс) -->
         <div class="filter-zone" id="controlZone">
             <div class="filter-group">
-                <span class="filter-label">Категория:</span>
-                <div class="custom-select-container" id="customSelectContainer">
-                    <button class="custom-select-trigger" onclick="UiManager.toggleCustomSelect(event)">
-                        <span id="customSelectValue">Все категории</span>
-                        <span class="custom-select-arrow">▼</span>
+                <span class="filter-label">Уровень:</span>
+                <div class="custom-select-container filter-level-container" id="customSelectContainerLevel">
+                    <button class="custom-select-trigger" onclick="UiComboBox.toggleSelect(event, 'customSelectContainerLevel')">
+                        <span id="customSelectValueLevel">Все</span><span class="custom-select-arrow">▼</span>
                     </button>
-                    <div class="custom-select-options" id="customSelectOptions"></div>
+                    <div class="custom-select-options" id="filterLevelOptions"></div>
                 </div>
             </div>
-            
+
             <div class="filter-group">
-                <label for="filterRepetition">⏳ Повторение: </label>
-                <select id="filterRepetition" onchange="UiManager.renderCards()">
-                    <option value="all">Все карточки</option>
-                    <option value="due">Только к повторению</option>
-                </select>
+                <span class="filter-label">Часть речи:</span>
+                <div class="custom-select-container filter-partOfSpeech-container" id="customSelectContainerPos">
+                    <button class="custom-select-trigger" onclick="UiComboBox.toggleSelect(event, 'customSelectContainerPos')">
+                        <span id="customSelectValuePartOfSpeech">Все</span><span class="custom-select-arrow">▼</span>
+                    </button>
+                    <div class="custom-select-options" id="filterPosOptions"></div>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <span class="filter-label">Тема:</span>
+                <div class="custom-select-container filter-topic-container" id="customSelectContainerTopic">
+                    <button class="custom-select-trigger" onclick="UiComboBox.toggleSelect(event, 'customSelectContainerTopic')">
+                        <span id="customSelectValueTopic">Все</span><span class="custom-select-arrow">▼</span>
+                    </button>
+                    <div class="custom-select-options" id="filterTopicOptions"></div>
+                </div>
             </div>
             
             <div class="daily-progress-box">
@@ -76,60 +83,9 @@
         <!-- 2. Сетка карточек -->
         <div class="grid" id="cardsGrid"></div>
 
-        <!-- 3. Окно Урока -->
-        <div class="panel test-box" id="testBox" style="display: none;">
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-            <h3 id="testProgress">Вопрос 0 из 0</h3>
-            <div class="test-exercise-label" id="testExerciseLabel"></div>
-            <div class="test-word" id="testWord">Word</div>
-            <button onclick="LessonModule.speakCurrentWord()" class="test-audio-btn" id="testAudioBtn">🔊</button>
-            <br>
-            <input type="text" id="testInput" class="test-input" placeholder="Введите перевод" autocomplete="off">
-            <div id="choicesGrid" class="choices-grid" style="display:none;"></div>
-            <br>
-            <button onclick="checkAnswer()" id="checkAnswerBtn">Проверить</button>
-            <button class="secondary" onclick="stopTest()">Прервать урок</button>
-            <div class="feedback" id="feedback"></div>
-        </div>
-    </div>
-
-    <!-- 4. Модальное окно для создания и редактирования карточек -->
-    <div class="modal-overlay" id="cardModal" onclick="FormHandler.closeModalViaOverlay(event)">
-        <div class="modal-content">
-            <button class="close-modal-btn" onclick="FormHandler.closeModal()">✕</button>
-            <h3 id="formTitle">Добавить новую карточку</h3>
-            <input type="hidden" id="editIndex" value="-1">
-            
-            <div class="flex-row">
-                <input type="text" id="wordInput" placeholder="Слово (английский)">
-                <button onclick="FormHandler.autoTranslate()" class="secondary" id="translateBtn">🔍 Автоперевод</button>
-            </div>
-            
-            <div id="variantsContainer" class="variants-box" style="display: none;">
-                <label>Выберите подходящие переводы:</label>
-                <div id="translationVariants" class="variants-list"></div>
-            </div>
-
-            <div class="flex-row">
-                <input type="text" id="translationInput" placeholder="Перевод (русский)">
-            </div>
-            <div class="flex-row">
-                <input type="text" id="exampleInput" placeholder="Пример употребления (необязательно)">
-            </div>
-            <!-- ИСПРАВЛЕНО: Добавлено явное поле для ввода перевода примера вручную -->
-            <div class="flex-row">
-                <input type="text" id="exampleTranslationInput" placeholder="Перевод примера (необязательно)">
-            </div>
-            <div class="flex-row stack">
-                <select id="categorySelect"></select>
-                <input type="text" id="newCategoryInput" placeholder="Или создайте новую категорию">
-            </div>
-            <div class="modal-footer">
-                <button onclick="FormHandler.addCard()" id="submitCardBtn" class="primary-btn">Добавить</button>
-            </div>
-        </div>
+        <!-- Сюда JS динамически внедрит lesson-box.html и card-modal.html -->
+        <div id="dynamicLessonBoxContainer"></div>
+        <div id="dynamicModalContainer"></div>
     </div>
 
     <script src="storage.js"></script>
@@ -137,7 +93,9 @@
     <script src="lesson-builder.js"></script>
     <script src="lesson-validator.js"></script>
     <script src="lesson-engine.js"></script>
-    <script src="ui-manager.js"></script>
+    <script src="ui-core.js"></script>
+    <script src="ui-combobox.js"></script>
+    <script src="ui-cards-renderer.js"></script>
     <script src="form-handler.js"></script>
     <script src="app.js"></script>
 </body>

@@ -1,38 +1,31 @@
 // Главная точка входа приложения (Application Entry Point)
 
-// Инициализируем базу данных
 window.currentCards = StorageModule.getCards();
 
-// Функция запуска "Умного урока"
 function startLesson() {
-    // ИСПРАВЛЕНО: Считываем категорию из переменной кастомного комбобокса, а не из удаленного select
-    const filterCategory = UiManager.selectedCategoryFilter;
+    const activeFilters = UiManager.filters;
 
     if (window.currentCards.length === 0) {
         alert('Ваш словарь пуст! Создайте первую карточку, кликнув на пустую плитку в сетке.');
         return;
     }
 
-    // Скрываем основные блоки интерфейса перед началом урока
     document.querySelector('.app-header').style.display = 'none';
     document.getElementById('controlZone').style.display = 'none';
     document.getElementById('cardsGrid').style.display = 'none';
 
-    // Запускаем игровой движок урока
-    LessonModule.start(filterCategory);
+    LessonModule.start(activeFilters);
 }
 
-// Прослойка для вызова проверки текстового ответа по кнопке или Enter
 function checkAnswer() { 
     const checkBtn = document.getElementById('checkAnswerBtn');
-    if (checkBtn.innerText === 'Завершить 🏁') {
+    if (checkBtn && checkBtn.innerText === 'Завершить 🏁') {
         stopTest();
         return;
     }
     LessonModule.checkAnswer(); 
 }
 
-// Прослойка возврата на главный экран
 function stopTest() { 
     LessonModule.stop(); 
     
@@ -40,21 +33,41 @@ function stopTest() {
     document.getElementById('controlZone').style.display = 'flex';
     document.getElementById('cardsGrid').style.display = 'grid';
 
-    // Сбрасываем фильтр категорий в дефолт
-    UiManager.selectedCategoryFilter = 'all';
-    document.getElementById('customSelectValue').innerText = 'Все категории';
+    UiManager.filters = { level: 'all', partOfSpeech: 'all', topic: 'all' };
+    document.getElementById('customSelectValueLevel').innerText = 'Все';
+    document.getElementById('customSelectValuePartOfSpeech').innerText = 'Все';
+    document.getElementById('customSelectValueTopic').innerText = 'Все';
 
-    UiManager.updateCategorySelects();
-    UiManager.renderCards(); 
+    UiManager.updateModalSelects();
+    UiComboBox.initFilters();
+    UiCardsRenderer.renderCards(); 
 }
 
-// Слушатель клавиатуры для текстового инпута урока (отправка ответа по Enter)
-document.getElementById('testInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') checkAnswer();
-});
+// Хелпер динамического импорта HTML-компонентов с сервера
+async function loadHtmlComponent(containerId, url) {
+    try {
+        const response = await fetch(url);
+        if (response.ok) {
+            document.getElementById(containerId).innerHTML = await response.text();
+        }
+    } catch (e) {
+        console.error(`Ошибка загрузки компонента ${url}:`, e);
+    }
+}
 
-// Инициализация приложения
 window.addEventListener('DOMContentLoaded', async () => {
+    // ДИНАМИЧЕСКИЙ ИМПОРТ РАЗМЕТКИ
+    await loadHtmlComponent('dynamicLessonBoxContainer', './lesson-box.html');
+    await loadHtmlComponent('dynamicModalContainer', './card-modal.html');
+
+    // Навешиваем слушатель Enter на инпут, который только что прилетел из lesson-box.html
+    const testInput = document.getElementById('testInput');
+    if (testInput) {
+        testInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkAnswer();
+        });
+    }
+
     document.getElementById('lessonSizeSelect').value = StorageModule.getLessonSize();
     
     if (window.currentCards.length === 0) {
@@ -63,6 +76,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    UiManager.updateCategorySelects();
-    UiManager.renderCards();
+    UiManager.updateModalSelects();
+    UiComboBox.initFilters();
+    UiCardsRenderer.renderCards();
 });

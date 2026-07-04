@@ -1,0 +1,65 @@
+<div class="modal-overlay" id="cardModal" onclick="FormHandler.closeModalViaOverlay(event)">
+    <div class="modal-content">
+        <button class="close-modal-btn" onclick="FormHandler.closeModal()">✕</button>
+        <h3 id="formTitle">Добавить новую карточку</h3>
+        <input type="hidden" id="editIndex" value="-1">
+        
+        <div class="flex-row">
+            <input type="text" id="wordInput" placeholder="Слово (английский)">
+            <button onclick="FormHandler.autoTranslate()" class="secondary" id="translateBtn">🔍 Автоперевод</button>
+        </div>
+        
+        <div id="variantsContainer" class="variants-box" style="display: none;">
+            <label>Выберите подходящие переводы:</label>
+            <div id="translationVariants" class="variants-list"></div>
+        </div>
+
+        <div class="flex-row">
+            <input type="text" id="translationInput" placeholder="Перевод (русский)">
+        </div>
+        <div class="flex-row">
+            <input type="text" id="exampleInput" placeholder="Пример употребления (необязательно)">
+        </div>
+        <div class="flex-row">
+            <input type="text" id="exampleTranslationInput" placeholder="Перевод примера (необязательно)">
+        </div>
+        
+        <div class="modal-parameters-grid">
+            <div class="flex-row stack">
+                <label class="modal-param-label">Уровень:</label>
+                <select id="categoryLevelSelect">
+                    <option value="A0">A0 (Starter)</option>
+                    <option value="A1" selected>A1 (Elementary)</option>
+                    <option value="A2">A2 (Pre-Intermediate)</option>
+                    <option value="B1">B1 (Intermediate)</option>
+                    <option value="B2">B2 (Upper-Intermediate)</option>
+                    <option value="C1">C1 (Advanced)</option>
+                    <option value="C2">C2 (Proficiency)</option>
+                </select>
+            </div>
+            <div class="flex-row stack">
+                <label class="modal-param-label">Часть речи:</label>
+                <select id="categoryPosSelect">
+                    <option value="Существительное" selected>Существительное</option>
+                    <option value="Глагол">Глагол</option>
+                    <option value="Прилагательное">Прилагательное</option>
+                    <option value="Наречие">Наречие</option>
+                    <option value="Междометие">Междометие</option>
+                    <option value="Местоимение">Местоимение</option>
+                </select>
+            </div>
+            <div class="flex-row stack">
+                <label class="modal-param-label">Тема / Топик:</label>
+                <select id="categoryTopicSelect"></select>
+            </div>
+        </div>
+        
+        <div class="flex-row stack" style="margin-top: 5px;">
+            <input type="text" id="newCategoryInput" placeholder="Или создайте новую тему/топик">
+        </div>
+
+        <div class="modal-footer">
+            <button onclick="FormHandler.addCard()" id="submitCardBtn" class="primary-btn">Добавить</button>
+        </div>
+    </div>
+</div>

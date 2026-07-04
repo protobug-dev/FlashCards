@@ -75,7 +75,6 @@ const FormHandler = {
                 }
                 
                 exampleInput.value = foundExample;
-                // ИСПРАВЛЕНО: Выводим найденный перевод примера прямо в новое текстовое поле инпута
                 exampleTranslationInput.value = foundExampleTranslation;
 
                 if(!foundExample) {
@@ -110,6 +109,7 @@ const FormHandler = {
         
         document.getElementById('cardModal').classList.add('active');
         document.getElementById('wordInput').focus();
+        UiManager.updateModalSelects(); // Обновляем селекты тем
     },
 
     editCard(event, index) {
@@ -117,13 +117,18 @@ const FormHandler = {
         const card = window.currentCards[index];
         
         this.resetFormFields();
+        UiManager.updateModalSelects(); // Наполняем селекты актуальными темами
         
         document.getElementById('wordInput').value = card.word;
         document.getElementById('translationInput').value = card.translation;
         document.getElementById('exampleInput').value = card.example || '';
-        // ИСПРАВЛЕНО: Подгружаем перевод примера в текстовое поле при редактировании
         document.getElementById('exampleTranslationInput').value = card.exampleTranslation || '';
-        document.getElementById('categorySelect').value = card.category;
+        
+        // ИСПРАВЛЕНО: Подгружаем тройные параметры при редактировании карточки
+        document.getElementById('categoryLevelSelect').value = card.levelStr || 'A1';
+        document.getElementById('categoryPosSelect').value = card.partOfSpeech || 'Существительное';
+        document.getElementById('categoryTopicSelect').value = card.topic || 'Общее';
+        
         document.getElementById('editIndex').value = index;
 
         document.getElementById('formTitle').innerText = "Редактировать карточку";
@@ -147,7 +152,6 @@ const FormHandler = {
         document.getElementById('wordInput').value = '';
         document.getElementById('translationInput').value = '';
         document.getElementById('exampleInput').value = '';
-        // ИСПРАВЛЕНО: Сбрасываем новое текстовое поле
         document.getElementById('exampleTranslationInput').value = '';
         document.getElementById('newCategoryInput').value = '';
         document.getElementById('variantsContainer').style.display = 'none';
@@ -158,10 +162,13 @@ const FormHandler = {
         const word = document.getElementById('wordInput').value.trim();
         const translation = document.getElementById('translationInput').value.trim();
         const example = document.getElementById('exampleInput').value.trim();
-        // ИСПРАВЛЕНО: Считываем перевод примера напрямую из текстового поля инпута
         const exampleTranslation = document.getElementById('exampleTranslationInput').value.trim();
-        const newCat = document.getElementById('newCategoryInput').value.trim();
-        let category = document.getElementById('categorySelect').value;
+        const newTopic = document.getElementById('newCategoryInput').value.trim();
+        
+        // ИСПРАВЛЕНО: Считываем параметры из тройной структуры селектов формы
+        const levelStr = document.getElementById('categoryLevelSelect').value;
+        const partOfSpeech = document.getElementById('categoryPosSelect').value;
+        let topic = document.getElementById('categoryTopicSelect').value;
         const editIndex = parseInt(document.getElementById('editIndex').value);
 
         if (!word || !translation) {
@@ -169,24 +176,26 @@ const FormHandler = {
             return;
         }
 
-        if (newCat) {
-            if (StorageModule.addCategoryIfNew(newCat)) {
-                UiManager.updateCategorySelects();
+        // Если пользователь ввёл текстовую новую тему
+        if (newTopic) {
+            if (StorageModule.addCategoryIfNew(newTopic)) {
+                UiManager.updateModalSelects();
             }
-            category = newCat;
+            topic = newTopic;
         }
 
         let stats = { correct: 0, wrong: 0 };
-        let level = 1;
+        let reviewLvl = 1; // Числовой шаг интервального повторения
         let nextReview = new Date().toISOString();
 
         if (editIndex > -1 && window.currentCards[editIndex]) {
             stats = window.currentCards[editIndex].stats || stats;
-            level = window.currentCards[editIndex].level || level;
+            reviewLvl = window.currentCards[editIndex].reviewLvl || reviewLvl;
             nextReview = window.currentCards[editIndex].nextReview || nextReview;
         }
 
-        const cardData = { word, translation, example, exampleTranslation, category, stats, level, nextReview };
+        // ИСПРАВЛЕНО: Создаем монолитный трехмерный объект карточки
+        const cardData = { word, translation, example, exampleTranslation, levelStr, partOfSpeech, topic, stats, reviewLvl, nextReview };
 
         if (editIndex > -1) {
             window.currentCards[editIndex] = cardData;
@@ -197,12 +206,8 @@ const FormHandler = {
         StorageModule.saveCards(window.currentCards);
         this.closeModal();
         
-        UiManager.updateCategorySelects();
-        if (newCat) {
-            document.getElementById('categorySelect').value = newCat;
-        }
-        
-        UiManager.renderCards();
+        UiComboBox.initFilters(); // Обновляем списки фильтров на главной
+        UiCardsRenderer.renderCards();
     },
 
     deleteCard(event, index) {
@@ -210,7 +215,7 @@ const FormHandler = {
         if (confirm('Удалить эту карточку?')) {
             window.currentCards.splice(index, 1);
             StorageModule.saveCards(window.currentCards);
-            UiManager.renderCards();
+            UiCardsRenderer.renderCards();
         }
     }
 };

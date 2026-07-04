@@ -1,0 +1,30 @@
+<div class="panel test-box" id="testBox" style="display: none;">
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <h3 id="testProgress">Вопрос 0 из 0</h3>
+    <div class="test-exercise-label" id="testExerciseLabel"></div>
+    <div class="test-word" id="testWord">Word</div>
+    <button onclick="LessonModule.speakCurrentWord()" class="test-audio-btn" id="testAudioBtn">🔊</button>
+    <br>
+    
+    <div id="lessonInteractiveZone">
+        <input type="text" id="testInput" class="test-input" placeholder="Введите перевод" autocomplete="off">
+        <div id="choicesGrid" class="choices-grid" style="display:none;"></div>
+        <br>
+        <button onclick="checkAnswer()" id="checkAnswerBtn">Проверить</button>
+    </div>
+
+    <div id="testOutConfirm" class="test-out-confirm-box" style="display: none;">
+        <p class="test-out-title">🤔 Вы хорошо знаете это слово?</p>
+        <p class="test-out-subtitle">Оставить его в обычной тренировке или пройдём жёсткую проверку и уберём навсегда из обучения?</p>
+        <div class="test-out-buttons">
+            <button class="secondary" onclick="LessonValidator.handleTestOutChoice(false)">Оставить в тренировках</button>
+            <button class="purple-btn" onclick="LessonValidator.handleTestOutChoice(true)">Пройти жёсткую проверку ⚡</button>
+        </div>
+    </div>
+
+    <br>
+    <button class="secondary" id="abortLessonBtn" onclick="stopTest()">Прервать урок</button>
+    <div class="feedback" id="feedback"></div>
+</div>

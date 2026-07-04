@@ -19,14 +19,21 @@ const LessonModule = {
         this.currentIndex = 0;
         this.score = 0;
 
+        // Гарантируем сброс кастомных окон и стилей экстрим-режима при старте
+        document.getElementById('testBox').classList.remove('hard-mode');
+        document.getElementById('testOutConfirm').style.display = 'none';
+        document.getElementById('lessonInteractiveZone').style.display = 'block';
+
         const checkBtn = document.getElementById('checkAnswerBtn');
         checkBtn.innerText = 'Проверить';
         checkBtn.style.display = 'inline-block';
 
-        // Собираем сессию
+        // Восстанавливаем кнопку прерывания (на случай если прошлый урок был завершен нормально)
+        const cancelBtn = document.querySelector('#testBox button.secondary');
+        if (cancelBtn) cancelBtn.style.display = 'inline-block';
+
         this.queue = LessonBuilder.buildSession(selectedCategory);
         
-        // Считаем точное количество уникальных карточек в этом уроке
         const uniqueWords = new Set(this.queue.map(task => task.card.word.trim().toLowerCase()));
         this.uniqueCardsCount = uniqueWords.size;
 
@@ -46,7 +53,6 @@ const LessonModule = {
         testInput.value = '';
         choicesGrid.innerHTML = '';
 
-        // Урок окончен
         if (this.currentIndex >= this.queue.length) {
             this.finishLesson();
             return;
@@ -175,7 +181,7 @@ const LessonModule = {
         document.getElementById('choicesGrid').style.display = 'none';
         document.getElementById('testAudioBtn').style.display = 'none';
         
-        // ИСПРАВЛЕНО: Прячем кнопку "Прервать урок" на экране поздравления
+        // ИСПРАВЛЕНО: Скрываем кнопку "Прервать урок" на экране поздравления
         const cancelBtn = document.querySelector('#testBox button.secondary');
         if (cancelBtn) cancelBtn.style.display = 'none';
         
@@ -197,7 +203,8 @@ const LessonModule = {
         this.score = 0;
         this.uniqueCardsCount = 0;
         
-        // ВОЗВРАЩАЕМ дефолтное отображение кнопки отмены на случай следующего запуска урока
+        document.getElementById('testBox').classList.remove('hard-mode');
+        
         const cancelBtn = document.querySelector('#testBox button.secondary');
         if (cancelBtn) cancelBtn.style.display = 'inline-block';
         

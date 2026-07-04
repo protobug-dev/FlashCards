@@ -14,16 +14,41 @@ const StorageModule = {
         localStorage.setItem(this.CARDS_KEY, JSON.stringify(cards));
     },
 
+    // ИСПРАВЛЕНО: Безопасный метод, который всегда гарантирует возврат объекта topics
     getCategories() {
-        return JSON.parse(localStorage.getItem(this.CATEGORIES_KEY)) || ['Общее', 'Глаголы', 'Существительные'];
+        const raw = localStorage.getItem(this.CATEGORIES_KEY);
+        let savedTopics = ["Знакомство & Люди", "Дом & Семья", "Еда & Покупки", "IT & Технологии", "Работа & Отдых", "Путешествия", "Природа & Отдых"];
+        
+        if (raw) {
+            try {
+                const parsed = JSON.parse(raw);
+                // Если в базе лежит старый плоский массив строк — забираем его
+                if (Array.isArray(parsed)) {
+                    savedTopics = parsed;
+                } else if (parsed && Array.isArray(parsed.topics)) {
+                    // Если это новый формат объекта — забираем массив оттуда
+                    savedTopics = parsed.topics;
+                }
+            } catch (e) {
+                console.error("Ошибка парсинга категорий, откат к дефолту", e);
+            }
+        }
+
+        return {
+            levels: ["A0", "A1", "A2", "B1", "B2", "C1", "C2"],
+            partsOfSpeech: ["Существительное", "Глагол", "Прилагательное", "Наречие", "Междометие", "Местоимение"],
+            topics: savedTopics
+        };
     },
 
-    addCategoryIfNew(newCat) {
-        if (!newCat) return null;
+    // ИСПРАВЛЕНО: Безопасное добавление новой темы в массив
+    addCategoryIfNew(newTopic) {
+        if (!newTopic) return null;
         let categories = this.getCategories();
-        if (!categories.includes(newCat)) {
-            categories.push(newCat);
-            localStorage.setItem(this.CATEGORIES_KEY, JSON.stringify(categories));
+        if (!categories.topics.includes(newTopic)) {
+            categories.topics.push(newTopic);
+            // Сохраняем обратно как плоский чистый массив строк во избежание конфликтов
+            localStorage.setItem(this.CATEGORIES_KEY, JSON.stringify(categories.topics));
             return true;
         }
         return false;
@@ -54,24 +79,35 @@ const StorageModule = {
         return updatedData.completedCount;
     },
 
-    // НОВЫЙ МЕТОД: Бесшовная загрузка стартового JSON-файла прямо с сервера (GitHub Pages)
     async loadDefaultData(callback) {
         try {
-            // Делаем асинхронный запрос к файлу, лежащему рядом с index.html
-            const response = await fetch('./flashcards_backup.json');
-            
-            // Если файла на сервере нет, просто тихо выходим
+            const response = await fetch('./FlashCards_backup.json');
             if (!response.ok) return;
 
             const importedData = await response.json();
             
-            if (importedData.categories && Array.isArray(importedData.categories)) {
-                localStorage.setItem(this.CATEGORIES_KEY, JSON.stringify(importedData.categories));
-            }
             if (importedData.cards && Array.isArray(importedData.cards)) {
+                let currentTopics = this.getCategories().topics;
+                importedData.cards.forEach(card => {
+                    const t = card.topic || card.category || "Общее";
+                    if (!currentTopics.includes(t)) currentTopics.push(t);
+                    
+                    if (card.category && !card.topic) {
+                        card.topic = card.category;
+                        delete card.category;
+                    }
+                    if (!card.levelStr) {
+                        card.levelStr = card.level || "A1";
+                        card.level = 1; 
+                    }
+                    if (!card.reviewLvl) {
+                        card.reviewLvl = card.level || 1;
+                    }
+                });
+                
+                localStorage.setItem(this.CATEGORIES_KEY, JSON.stringify(currentTopics));
                 this.saveCards(importedData.cards);
                 
-                // Передаем новые данные в колбэк, чтобы обновить глобальную переменную в app.js
                 if (callback) callback(importedData.cards);
             }
         } catch (error) {
@@ -80,7 +116,10 @@ const StorageModule = {
     },
 
     exportJSON() {
-        const dataToExport = { cards: this.getCards(), categories: this.getCategories() };
+        const dataToExport = { 
+            cards: this.getCards(), 
+            topics: this.getCategories().topics 
+        };
         const jsonString = JSON.stringify(dataToExport, null, 2);
         const blob = new Blob([jsonString], { type: 'application/json' });
         const blobUrl = URL.createObjectURL(blob);
@@ -104,18 +143,25 @@ const StorageModule = {
                     return;
                 }
 
-                let currentCategories = this.getCategories();
-                if (importedData.categories && Array.isArray(importedData.categories)) {
-                    importedData.categories.forEach(cat => {
-                        if (!currentCategories.includes(cat)) currentCategories.push(cat);
-                    });
-                    localStorage.setItem(this.CATEGORIES_KEY, JSON.stringify(currentCategories));
-                }
-
+                let currentTopics = this.getCategories().topics;
                 let currentCards = this.getCards();
                 let addedCount = 0;
 
                 importedData.cards.forEach(newCard => {
+                    const t = newCard.topic || newCard.category || "Общее";
+                    if (!currentTopics.includes(t)) currentTopics.push(t);
+                    
+                    if (newCard.category && !newCard.topic) {
+                        newCard.topic = newCard.category;
+                        delete newCard.category;
+                    }
+                    if (!newCard.levelStr) {
+                        newCard.levelStr = newCard.level || "A1";
+                    }
+                    if (!newCard.reviewLvl) {
+                        newCard.reviewLvl = newCard.level || 1;
+                    }
+
                     const isDuplicate = currentCards.some(oldCard => 
                         oldCard.word.trim().toLowerCase() === newCard.word.trim().toLowerCase()
                     );
@@ -125,6 +171,7 @@ const StorageModule = {
                     }
                 });
 
+                localStorage.setItem(this.CATEGORIES_KEY, JSON.stringify(currentTopics));
                 this.saveCards(currentCards);
                 alert(`Импорт успешно завершен! Добавлено новых карточек: ${addedCount}`);
                 if (callback) callback(currentCards);

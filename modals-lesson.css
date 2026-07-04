@@ -38,3 +38,64 @@
 .choice-btn.correct { background-color: var(--success-color); color: white; }
 .choice-btn.wrong { background-color: var(--danger-color); color: white; }
 .feedback { font-weight: bold; margin-top: 15px; font-size: 18px; min-height: 24px; }
+
+/* --- СТИЛИ ДЛЯ ИНТЕРАКТИВНОЙ РАЗВИЛКИ TEST OUT --- */
+.test-out-confirm-box {
+    background-color: #fcf9ff; /* Нежная фиолетовая подложка */
+    border: 1px dashed #a29bfe;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px auto;
+    max-width: 450px;
+}
+
+.test-out-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #6c5ce7;
+    margin-bottom: 8px;
+}
+
+.test-out-subtitle {
+    font-size: 13px;
+    color: #7f8c8d;
+    line-height: 1.4;
+    margin-bottom: 15px;
+}
+
+.test-out-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Красивая неоново-фиолетовая кнопка вызова */
+button.purple-btn {
+    background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(108, 92, 231, 0.2);
+}
+
+/* --- ЖЁСТКИЙ РЕЖИМ (HARD MODE) ДЛЯ ТРЕНИРОВОЧНОГО БОКСА --- */
+.test-box.hard-mode {
+    border: 2px solid #6c5ce7; /* Сочная фиолетовая обводка формы */
+    background-color: #faf9ff;
+    /* Элегантное пульсирующее неоновое свечение */
+    animation: purplePulse 2s infinite alternate; 
+    transition: border-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+@keyframes purplePulse {
+    0% {
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05), 0 0 5px rgba(108, 92, 231, 0.1);
+    }
+    100% {
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05), 0 0 15px rgba(108, 92, 231, 0.4);
+    }
+}
+
+/* Перекрашиваем прогресс-бар в фиолетовый цвет во время жесткой проверки */
+.test-box.hard-mode .progress-bar {
+    background-color: #6c5ce7;
+}

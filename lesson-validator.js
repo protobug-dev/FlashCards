@@ -28,7 +28,7 @@ const LessonValidator = {
         const feedbackEl = document.getElementById('feedback');
 
         const buttons = document.querySelectorAll('#choicesGrid .choice-btn');
-        const cleanCorrectAnswer = correctAnswerMessage.split(',').map(t => t.trim())[0].toLowerCase();
+        const cleanCorrectAnswer = correctAnswerMessage.split(',')[0].trim().toLowerCase();
         
         buttons.forEach(btn => {
             btn.disabled = true;
@@ -38,41 +38,49 @@ const LessonValidator = {
         });
 
         if (!realCard.stats) realCard.stats = { correct: 0, wrong: 0 };
-        if (!realCard.level) realCard.level = 1;
+        if (!realCard.reviewLvl) realCard.reviewLvl = 1;
 
         if (isCorrect) {
             feedbackEl.style.color = 'var(--success-color)';
             
-            // Если это был верный ответ в рамках "Экзамена на вылет"
-            if (task.isTestOut) {
-                feedbackEl.innerText = `Верно! Проверка слова.. (Шаг ${task.testOutStep} из 4) 🔍`;
+            // ИСПРАВЛЕНО: Новая развилка для первого шага "Экзамена на вылет"
+            if (task.isTestOut && task.testOutStep === 1) {
+                if (task.isFirstTry) realCard.stats.correct++;
                 
+                // Переключаем форму на вывод вопроса-выбора вместо автоматического продолжения
+                document.getElementById('lessonInteractiveZone').style.display = 'none';
+                document.getElementById('testOutConfirm').style.display = 'block';
+                return; // Останавливаем выполнение, ждем клика по кнопкам диалога
+            } 
+            
+            // Если пользователь уже принял вызов и идет по жесткой проверке (шаги 2, 3, 4)
+            if (task.isTestOut && task.testOutStep > 1) {
+                feedbackEl.innerText = `⚡ Жёсткая проверка: Шаг ${task.testOutStep} из 4 пройден!`;
                 if (task.isFirstTry) realCard.stats.correct++;
 
                 if (task.testOutStep < 4) {
-                    // Генерируем следующий шаг экспресс-теста
-                    let nextType = 'typed:ru-en'; // шаг 2
-                    if (task.testOutStep === 2) nextType = 'choice:en-ru'; // шаг 3
-                    if (task.testOutStep === 3) nextType = 'choice:ru-en'; // шаг 4
+                    let nextType = 'typed:ru-en'; 
+                    if (task.testOutStep === 2) nextType = 'choice:en-ru'; 
+                    if (task.testOutStep === 3) nextType = 'choice:ru-en'; 
 
-                    // На лету добавляем следующее задание СРАЗУ за текущим элементом в очереди
                     LessonModule.queue.splice(LessonModule.currentIndex + 1, 0, {
                         card: card,
                         type: nextType,
-                        isFirstTry: task.isFirstTry, // Сохраняем, была ли ошибка ранее
+                        isFirstTry: task.isFirstTry,
                         isTestOut: true,
                         testOutStep: task.testOutStep + 1
                     });
                 } else {
-                    // ШАГ 4 УСПЕШНО ПРОЙДЕН: Слово подтверждено!
+                    // Экзамен сдан на 100%
                     feedbackEl.innerText = 'Потрясающе! Слово выучено экстерном! 🥇';
-                    realCard.level = 6; // Отправляем в вечный архив
-                    realCard.nextReview = null; // Ему больше не нужны даты повторения
+                    realCard.reviewLvl = 6;
+                    realCard.nextReview = null;
+                    // Выключаем фиолетовую рамку экстрима
+                    document.getElementById('testBox').classList.remove('hard-mode');
                 }
             } else {
-                // СТАНДАРТНАЯ ЛОГИКА ОТВЕТА (для старых/повторяемых карточек)
+                // Стандартная ветка повторения
                 feedbackEl.innerText = 'Правильно! 🎉';
-                
                 if (task.isFirstTry) {
                     LessonModule.score++;
                     realCard.stats.correct++;
@@ -81,21 +89,20 @@ const LessonValidator = {
                     const successRate = realCard.stats.correct / totalAnswers;
 
                     if (successRate >= 0.90) {
-                        // Если обычное слово дошло до 5 уровня и снова пройдено без ошибок -> Архив Lvl 6
-                        if (realCard.level === 5) {
-                            realCard.level = 6;
+                        if (realCard.reviewLvl === 5) {
+                            realCard.reviewLvl = 6;
                             realCard.nextReview = null;
-                            feedbackEl.innerText = 'Поздравляем! Слово полностью выучено и уходит в архив! 🏆';
+                            feedbackEl.innerText = 'Поздравляем! Слово уходит в архив! 🏆';
                         } else {
-                            realCard.level++;
+                            realCard.reviewLvl++;
                             const intervals = { 1: 1, 2: 3, 3: 7, 4: 14, 5: 30 };
-                            const daysToAdd = intervals[realCard.level] || 1;
+                            const daysToAdd = intervals[realCard.reviewLvl] || 1;
                             const nextDate = new Date();
                             nextDate.setDate(nextDate.getDate() + daysToAdd);
                             realCard.nextReview = nextDate.toISOString();
                         }
                     } else {
-                        realCard.nextReview = new Date().toISOString(); // Карантин
+                        realCard.nextReview = new Date().toISOString();
                     }
                 }
             }
@@ -108,32 +115,69 @@ const LessonValidator = {
             feedbackEl.style.color = 'var(--danger-color)';
             feedbackEl.innerText = `Ошибка. Правильно: ${correctAnswerMessage}`;
             
+            // Выключаем фиолетовый экстрим-режим в случае ошибки
+            document.getElementById('testBox').classList.remove('hard-mode');
+
             if (task.isFirstTry) {
                 realCard.stats.wrong++;
-                realCard.level = 1;
+                realCard.reviewLvl = 1;
                 realCard.nextReview = new Date().toISOString();
             }
 
             if (task.isTestOut) {
-                // Если сбой произошел во время "Экзамена на вылет"
-                feedbackEl.innerText = `Не зачтено. Добавляем слово на базовое изучение. Правильно: ${correctAnswerMessage}`;
-                
-                // Прерываем экспресс-тест и заставляем пройти классический цикл: Ознакомление + Выбор
+                feedbackEl.innerText = `Не зачтено. Отправляем слово на базовое изучение. Правильно: ${correctAnswerMessage}`;
                 LessonModule.queue.push({ card: card, type: 'study' });
                 LessonModule.queue.push({ card: card, type: 'choice:en-ru', isFirstTry: false });
             } else {
-                // Обычное зацикливание ошибки
                 LessonModule.queue.push({ card: card, type: task.type, isFirstTry: false });
             }
             
             LessonModule.currentIndex++;
         }
 
-        // Обновляем общее количество задач на ходу, так как длина очереди динамически меняется
         const uniqueWords = new Set(LessonModule.queue.map(t => t.card.word.trim().toLowerCase()));
         LessonModule.uniqueCardsCount = uniqueWords.size;
 
         StorageModule.saveCards(window.currentCards);
         setTimeout(() => LessonModule.showQuestion(), task.type.startsWith('choice') ? 1200 : 2000);
+    },
+
+    // ИСПРАВЛЕНО: Обработчик клика по кнопкам диалога развилки
+    handleTestOutChoice(wantsHardCheck) {
+        const task = LessonModule.queue[LessonModule.currentIndex];
+        const card = task.card;
+        
+        // Прячем диалоговое окно и возвращаем стандартную зону инпутов
+        document.getElementById('testOutConfirm').style.display = 'none';
+        document.getElementById('lessonInteractiveZone').style.display = 'block';
+
+        if (wantsHardCheck) {
+            // Включаем визуальный фиолетовый экстрим-режим для формы!
+            document.getElementById('testBox').classList.add('hard-mode');
+
+            // Запускаем жесткую цепочку: подмешиваем в очередь следующий шаг (Шаг 2)
+            LessonModule.queue.splice(LessonModule.currentIndex + 1, 0, {
+                card: card,
+                type: 'typed:ru-en', // Шаг 2: Ввод на английском руками
+                isFirstTry: task.isFirstTry,
+                isTestOut: true,
+                testOutStep: 2
+            });
+            
+            // Сдвигаем индекс на это новое созданное задание
+            LessonModule.currentIndex++;
+            LessonModule.showQuestion();
+        } else {
+            // Если пользователь нажал "Оставить": убираем флаг экзамена, 
+            // слово превращается в стандартного новичка и уходит в обычную тренировку
+            task.isTestOut = false;
+            
+            // Пушим стандартную пару: Ознакомление + Выбор
+            LessonModule.queue.push({ card: card, type: 'study' });
+            LessonModule.queue.push({ card: card, type: 'choice:en-ru', isFirstTry: false });
+            
+            LessonModule.currentIndex++;
+            LessonModule.showQuestion();
+        }
     }
 };
