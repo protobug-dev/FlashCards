@@ -45,13 +45,23 @@ const UiCardsRenderer = {
         `;
         grid.appendChild(creatorContainer);
 
-        // 2. Умная трёхмерная фильтрация
+        // ИСПРАВЛЕНО: Получаем текущее значение строки живого поиска
+        const searchInput = document.getElementById('appSearchInput');
+        const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+        // 2. Умная трёхмерная фильтрация + ФИЛЬТРАЦИЯ ПО ЖИВОМУ ПОИСКУ
         const f = UiManager.filters;
         let filteredCards = window.currentCards.filter(card => {
             const matchLvl = f.level === 'all' || card.levelStr === f.level;
             const matchPos = f.partOfSpeech === 'all' || card.partOfSpeech === f.partOfSpeech;
             const matchTopic = f.topic === 'all' || card.topic === f.topic;
-            return matchLvl && matchPos && matchTopic;
+            
+            // Проверка подстроки в английском слове ИЛИ русском переводе карточки
+            const matchSearch = !query || 
+                card.word.toLowerCase().includes(query) || 
+                card.translation.toLowerCase().includes(query);
+
+            return matchLvl && matchPos && matchTopic && matchSearch;
         });
 
         // 3. Сортировка по алфавиту
@@ -77,7 +87,6 @@ const UiCardsRenderer = {
                 ? `<div class="master-badge">🥇 Выучено</div>`
                 : `<div class="lvl-badge lvl-badge-${reviewLvl}">${reviewLvl}</div>`;
 
-            // Компактные теги-пилюли для шапки карточки
             const tagsHtml = `
                 <div class="card-header-tags">
                     <span class="tag-mini tag-lvl">${card.levelStr || 'A1'}</span>
@@ -99,29 +108,23 @@ const UiCardsRenderer = {
             container.className = 'card-container';
             container.innerHTML = `
                 <div class="card ${dueClass}" onclick="UiCardsRenderer.flipCard(this)">
-                    <!-- Лицевая сторона -->
                     <div class="card-front">
-                        <!-- ИСПРАВЛЕНО: Шапка теперь полностью свободна для длинных тегов групп -->
                         <div class="card-header-row">
                             ${tagsHtml}
                         </div>
-                        
-                        <!-- ИСПРАВЛЕНО: Кнопка прослушивания интегрирована прямо к слову по центру -->
                         <div class="card-content">
                             <div class="main-card-word-row">
                                 <span class="main-card-word">${card.word}</span>
-                                <button class="audio-btn inline-audio" onclick="ApiModule.speak('${card.word.replace(/'/g, "\\'")}', event)">🔊</button>
+                                <button class="audio-btn inline-audio" onclick="event.stopPropagation(); ApiModule.speak('${card.word.replace(/'/g, "\\'")}')">🔊</button>
                             </div>
                             ${exampleHtml}
                         </div>
-                        
                         <div class="card-footer-row">
                             ${levelBadgeHtml}
                             ${statsHtml}
                             ${toolbarHtml}
                         </div>
                     </div>
-                    <!-- Обратная сторона -->
                     <div class="card-back">
                         <div class="card-header-row">
                             ${tagsHtml}

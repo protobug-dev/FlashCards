@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Flashcards Pro — Умные карточки</title>
-    <link rel="icon" type="image/png" href="./icons8-graduation-cap-96.png">
+    <link rel="icon" type="image/png" href="https://icons8.com">
     
     <link rel="stylesheet" href="theme.css">
     <link rel="stylesheet" href="layout.css">
     <link rel="stylesheet" href="components.css">
     <link rel="stylesheet" href="modals-lesson.css">
-    <!-- Подключаем PWA Манифест -->
-    <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
@@ -40,7 +38,7 @@
             </div>
         </header>
 
-        <!-- 1. Панель управления (Тройные фильтры + Прогресс) -->
+        <!-- 1. Панель управления (Тройные фильтры + ПОИСК + Прогресс) -->
         <div class="filter-zone" id="controlZone">
             <div class="filter-group">
                 <span class="filter-label">Уровень:</span>
@@ -71,9 +69,14 @@
                     <div class="custom-select-options" id="filterTopicOptions"></div>
                 </div>
             </div>
+
+            <!-- ИСПРАВЛЕНО: Интерактивный живой поиск по подстроке -->
+            <div class="search-group">
+                <input type="text" id="appSearchInput" placeholder="🔍 Поиск слова или перевода..." oninput="UiCardsRenderer.renderCards()" autocomplete="off">
+            </div>
             
+            <!-- ИСПРАВЛЕНО: Метка "Пройдено сегодня" полностью удалена, остались только лаконичные кубики -->
             <div class="daily-progress-box">
-                <span class="progress-label">Пройдено сегодня:</span>
                 <div class="progress-cubes" id="dailyCubes"></div>
             </div>
 
@@ -85,7 +88,7 @@
         <!-- 2. Сетка карточек -->
         <div class="grid" id="cardsGrid"></div>
 
-        <!-- Сюда JS динамически внедрит lesson-box.html и card-modal.html -->
+        <!-- Сюда JS динамически внедрит компоненты -->
         <div id="dynamicLessonBoxContainer"></div>
         <div id="dynamicModalContainer"></div>
     </div>

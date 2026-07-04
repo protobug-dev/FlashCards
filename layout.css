@@ -106,13 +106,35 @@ select, input[type="text"] {
     color: #7f8c8d;
 }
 
+/* ИСПРАВЛЕНО: Стили нового блока интерактивного поиска */
+.search-group {
+    flex-grow: 1; /* Поиск занимает всё свободное пространство в центре */
+    min-width: 200px;
+}
+
+#appSearchInput {
+    width: 100%;
+    font-size: 13px;
+    padding: 7px 14px;
+    background-color: #f1f5f9; /* Легкая пастельно-серая подложка */
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+#appSearchInput:focus {
+    background-color: #ffffff;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
 /* --- СТИЛИЗАЦИЯ КАСТОМНЫХ ВЫПАДАЮЩИХ КОМБОБОКСОВ --- */
 .custom-select-container {
     position: relative;
-    min-width: 160px;
+    min-width: 140px;
 }
 
-/* Главная кнопка-триггер фильтра */
 .custom-select-trigger {
     width: 100%;
     display: flex;
@@ -145,7 +167,6 @@ select, input[type="text"] {
     transform: rotate(180deg);
 }
 
-/* Раскрывающийся блок с вариантами */
 .custom-select-options {
     display: none;
     position: absolute;
@@ -165,7 +186,6 @@ select, input[type="text"] {
     display: block;
 }
 
-/* Пункт списка */
 .custom-select-option {
     padding: 10px 14px;
     font-size: 13px;
@@ -199,18 +219,12 @@ button.primary-btn { background-color: var(--primary-color); color: white; paddi
 .daily-progress-box {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
     background-color: var(--secondary-color);
-    padding: 6px 15px;
+    padding: 6px 12px;
     border-radius: 20px;
     border: 1px solid var(--border-color);
     min-height: 34px; 
-}
-
-.progress-label { 
-    font-size: 13px; 
-    font-weight: bold; 
-    color: #7f8c8d; 
 }
 
 .progress-cubes { 
@@ -237,7 +251,6 @@ button.primary-btn { background-color: var(--primary-color); color: white; paddi
     margin-left: auto; 
 }
 
-/* Кнопка Старт */
 button.success-btn {
     display: inline-flex;
     align-items: center;
@@ -280,45 +293,46 @@ button.success-btn::before {
     gap: 20px;
 }
 
-
-/* --- ИСПРАВЛЕНО: УМНАЯ АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ ЭКРАНОВ (ЭКРАНЫ ДО 768px) --- */
+/* --- УМНАЯ АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ ЭКРАНОВ --- */
 @media (max-width: 768px) {
-    /* Перестраиваем панель в строгую вертикальную колонку */
     .filter-zone {
         flex-direction: column;
-        align-items: stretch; /* Растягиваем элементы на всю ширину */
+        align-items: stretch; 
         gap: 12px;
         padding: 15px;
     }
 
-    /* Растягиваем фильтры на 100% ширины, делая их симметричными */
     .filter-zone .filter-group {
         display: flex;
-        justify-content: space-between; /* Название слева, комбобокс справа */
+        justify-content: space-between; 
         width: 100%;
     }
 
-    /* Делаем кастомные кнопки выбора одинаковыми по ширине на мобильном */
     .filter-zone .custom-select-container {
         flex-grow: 1;
-        max-width: 65%; /* Ограничиваем комбобокс, чтобы он аккуратно встал справа */
+        max-width: 65%; 
     }
 
-    /* На последней строчке кубики прогресса и кнопка встанут в аккуратный горизонтальный ряд */
+    /* ИСПРАВЛЕНО: Строка поиска на мобильных занимает отдельную полноценную строчку */
+    .search-group {
+        width: 100%;
+        margin: 4px 0;
+    }
+
+    /* Ряд подвала (кубики + кнопка) */
     .daily-progress-box {
         width: auto;
-        flex-grow: 1; /* Отдаем кубикам максимум места слева */
-        justify-content: space-between;
+        flex-grow: 1; 
+        justify-content: center;
     }
 
-    /* Кнопка старт больше не прибивается влево жестко, а встает вровень с кубиками в подвале панели */
     .test-action-group {
         margin-left: 0;
         display: flex;
     }
 
     button.success-btn {
-        width: 100%; /* Кнопка становится крупной и удобной для клика пальцем */
-        padding: 12px 20px; /* Немного увеличиваем высоту под тач-интерфейс */
+        width: 100%; 
+        padding: 12px 20px; 
     }
 }

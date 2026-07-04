@@ -1,5 +1,5 @@
 // Фоновый скрипт кэширования PWA (Service Worker)
-const CACHE_NAME = 'flashcards-v4'; // Изменили версию, чтобы сбросить старый кэш
+const CACHE_NAME = 'flashcards-v0'; // Изменили версию, чтобы сбросить старый кэш
 const ASSETS = [
   './index.html',
   './lesson-box.html',
