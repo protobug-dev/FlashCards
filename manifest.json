@@ -1,0 +1,22 @@
+{
+  "short_name": "Flashcards",
+  "name": "Smart Flashcards Pro",
+  "description": "Умные интервальные карточки для изучения английского языка",
+  "icons": [
+    {
+      "src": "https://icons8.com",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "https://icons8.com",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#f1f2f6",
+  "theme_color": "#4a90e2",
+  "display": "standalone",
+  "orientation": "portrait"
+}

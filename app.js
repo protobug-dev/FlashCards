@@ -80,3 +80,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     UiComboBox.initFilters();
     UiCardsRenderer.renderCards();
 });
+
+// Автоматическая регистрация PWA Сервис-Воркера
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('PWA Service Worker успешно зарегистрирован!', reg.scope))
+            .catch(err => console.log('Сбой регистрации Service Worker:', err));
+    });
+}
