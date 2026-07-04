@@ -1,46 +1,50 @@
-// Модуль внешних сервисов (API & Speech Module)
+     //       const urlObject = new URL('https://api.mymemory.translated.net');
+ 
+            
+// Модуль интеграции с внешними API и системными функциями (API Module)
 
 const ApiModule = {
-    speak(text, event) {
-        if (event) event.stopPropagation();
+    // Асинхронный запрос к MyMemory API для автоматического перевода слов и поиска примеров
+    async fetchTranslation(text) {
+        const url = `https://api.mymemory.translated.net{encodeURIComponent(text)}&langpair=en|ru`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Сбой сети API');
+        return await response.json();
+    },
+
+    // Озвучка слов средствами браузера (Web Speech API)
+    speak(text) {
+        if (!text) return;
+        // Перед запуском нового звука сбрасываем предыдущую озвучку, чтобы звуки не накладывались
         window.speechSynthesis.cancel();
         
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
+        utterance.lang = 'en-US'; // Задаем американский английский акцент
+        utterance.rate = 0.9;     // Слегка замедляем темп для учебного восприятия
         window.speechSynthesis.speak(utterance);
-    },
-
-    async fetchTranslation(text) {
-        try {
-            const urlObject = new URL('https://api.mymemory.translated.net');
-            urlObject.searchParams.append('q', text);
-            urlObject.searchParams.append('langpair', 'en|ru');
-
-            const response = await fetch(urlObject.toString());
-            return await response.json();
-        } catch (error) {
-            console.error('Ошибка MyMemory API:', error);
-            throw error;
-        }
     }
 };
+
+// ГЛОБАЛЬНЫЕ ПРОСЛОЙКИ ДЛЯ КНОПОК ИМПОРТА/ЭКСПОРТА ИЗ INDEX.HTML
 
 function exportData() {
     StorageModule.exportJSON();
 }
 
+// ИСПРАВЛЕНО: Логика импорта полностью переведена на новые модули встраивания интерфейса
 function importData(event) {
     const file = event.target.files[0];
     if (!file) return;
-    
+
     StorageModule.importJSON(file, (updatedCards) => {
-        // Записываем обновленные данные в единое глобальное хранилище
         window.currentCards = updatedCards;
         
-        // Вызываем методы обновленного UI модуля
-        UiManager.updateCategorySelects();
-        UiManager.renderCards();
+        // Синхронно обновляем тройные селекторы модалки, фильтры комбобоксов и строим сетку карточек
+        UiManager.updateModalSelects();
+        UiComboBox.initFilters();
+        UiCardsRenderer.renderCards();
     });
     
+    // Сбрасываем значение инпута, чтобы можно было загрузить тот же файл повторно
     event.target.value = '';
 }

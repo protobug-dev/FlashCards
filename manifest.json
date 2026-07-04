@@ -4,14 +4,9 @@
   "description": "Умные интервальные карточки для изучения английского языка",
   "icons": [
     {
-      "src": "https://icons8.com",
+      "src": "./icons8-graduation-cap-96.png",
       "type": "image/png",
       "sizes": "96x96"
-    },
-    {
-      "src": "https://icons8.com",
-      "type": "image/png",
-      "sizes": "512x512"
     }
   ],
   "start_url": "./index.html",

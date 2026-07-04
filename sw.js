@@ -1,5 +1,6 @@
 // Фоновый скрипт кэширования PWA (Service Worker)
-const CACHE_NAME = 'flashcards-v1';
+const CACHE_NAME = 'flashcards-v2'; // Изменили версию, чтобы сбросить старый кэш
+// Найдите этот блок в начале sw.js и обновите строку с иконкой:
 const ASSETS = [
   './index.html',
   './lesson-box.html',
@@ -18,10 +19,11 @@ const ASSETS = [
   './ui-cards-renderer.js',
   './form-handler.js',
   './app.js',
-  './FlashCards_backup.json'
+  './icons8-graduation-cap-96.png', // ИСПРАВЛЕНО: точное имя вашего файла
+  './flashcards_backup.json'
 ];
 
-// Установка воркера и кэширование ресурсов
+
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -30,7 +32,6 @@ self.addEventListener('install', (e) => {
   );
 });
 
-// Активация и очистка старого кэша
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
@@ -43,7 +44,6 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// Перехват запросов и выдача файлов из кэша
 self.addEventListener('fetch', (e) => {
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {

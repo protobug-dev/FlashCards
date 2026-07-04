@@ -14,7 +14,6 @@ const StorageModule = {
         localStorage.setItem(this.CARDS_KEY, JSON.stringify(cards));
     },
 
-    // ИСПРАВЛЕНО: Безопасный метод, который всегда гарантирует возврат объекта topics
     getCategories() {
         const raw = localStorage.getItem(this.CATEGORIES_KEY);
         let savedTopics = ["Знакомство & Люди", "Дом & Семья", "Еда & Покупки", "IT & Технологии", "Работа & Отдых", "Путешествия", "Природа & Отдых"];
@@ -22,11 +21,9 @@ const StorageModule = {
         if (raw) {
             try {
                 const parsed = JSON.parse(raw);
-                // Если в базе лежит старый плоский массив строк — забираем его
                 if (Array.isArray(parsed)) {
                     savedTopics = parsed;
                 } else if (parsed && Array.isArray(parsed.topics)) {
-                    // Если это новый формат объекта — забираем массив оттуда
                     savedTopics = parsed.topics;
                 }
             } catch (e) {
@@ -41,13 +38,11 @@ const StorageModule = {
         };
     },
 
-    // ИСПРАВЛЕНО: Безопасное добавление новой темы в массив
     addCategoryIfNew(newTopic) {
         if (!newTopic) return null;
         let categories = this.getCategories();
         if (!categories.topics.includes(newTopic)) {
             categories.topics.push(newTopic);
-            // Сохраняем обратно как плоский чистый массив строк во избежание конфликтов
             localStorage.setItem(this.CATEGORIES_KEY, JSON.stringify(categories.topics));
             return true;
         }
@@ -133,6 +128,7 @@ const StorageModule = {
         URL.revokeObjectURL(blobUrl);
     },
 
+    // ИСПРАВЛЕНО: Полная очистка от старых вызовов ui-manager во время импорта
     importJSON(file, callback) {
         const reader = new FileReader();
         reader.onload = (event) => {
