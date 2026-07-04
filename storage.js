@@ -128,7 +128,7 @@ const StorageModule = {
         URL.revokeObjectURL(blobUrl);
     },
 
-    // ИСПРАВЛЕНО: Полная очистка от старых вызовов ui-manager во время импорта
+    // 
     importJSON(file, callback) {
         const reader = new FileReader();
         reader.onload = (event) => {
